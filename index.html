@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora ZRZ - Linealidad A/B</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+
+        input[type="number"],
+        input[type="file"] {
+            width: 100%;
+            max-width: 300px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        input[type="number"]:focus,
+        input[type="file"]:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        button.secondary {
+            background: #95a5a6;
+        }
+
+        button.secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .data-table-container {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background: #34495e;
+            color: white;
+            font-weight: 600;
+        }
+
+        td input {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            text-align: center;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 4px;
+            color: #856404;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .info-box h3 {
+            color: #0c5460;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .result-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .result-card .label {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        .result-card .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .result-card .unit {
+            font-size: 14px;
+            color: #95a5a6;
+        }
+
+        #chartContainer {
+            margin-top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora ZRZ - Linealidad A/B</h1>
+        <p class="subtitle">Herramienta de calibración para conversión de errores de linealidad</p>
+
+        <div class="info-box">
+            <h3>📐 Método de cálculo</h3>
+            <p>
+                <strong>ZRZ</strong> se calcula a partir de la diferencia de errores A/B dividida por 2·R según la fórmula:
+            </p>
+            <p style="text-align: center; margin: 10px 0; font-family: monospace; font-size: 15px;">
+                ZRZ(Z<sub>i</sub>) = (A_error(Z<sub>i</sub>) − B_error(Z<sub>i</sub>)) / (2 · R)
+            </p>
+            <p>
+                Este método es equivalente al método por inversión (90° / −90°) usado en calibración de máquinas de medición por coordenadas.
+                El resultado se expresa en µm/mm y µm/m.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>1. Radio de medición (R)</h2>
+            <div class="input-group">
+                <label for="radioInput">Radio R (mm):</label>
+                <input type="number" id="radioInput" step="0.001" placeholder="Ej: 50.0" value="50">
+            </div>
+            <div id="radioWarning" class="warning hidden">
+                ⚠️ El radio debe ser un valor positivo mayor que cero.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>2. Datos de medición</h2>
+            
+            <div class="btn-group">
+                <button onclick="loadSampleData()">📝 Cargar datos de ejemplo</button>
+                <button class="secondary" onclick="addRow()">➕ Añadir fila</button>
+                <button class="secondary" onclick="clearData()">🗑️ Limpiar tabla</button>
+            </div>
+
+            <div class="input-group" style="margin-top: 20px;">
+                <label for="fileInput">Importar archivo CSV o Excel:</label>
+                <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" onchange="handleFileUpload(event)">
+            </div>
+
+            <div class="data-table-container">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Z (mm)</th>
+                            <th>A_error (µm)</th>
+                            <th>B_error (µm)</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="dataWarning" class="warning hidden">
+                ⚠️ Algunas filas tienen datos incompletos. Complete todos los campos para calcular.
+            </div>
+        </div>
+
+        <div class="section">
+            <button onclick="calculateZRZ()" style="font-size: 16px; padding: 12px 30px;">🧮 Calcular ZRZ</button>
+        </div>
+
+        <div id="resultsSection" class="section hidden">
+            <h2>3. Resultados del cálculo</h2>
+            
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="label">ZRZ Medio</div>
+                    <div class="value" id="meanZRZ">-</div>
+                    <div class="unit">µm/m</div>
+                </div>
+                <div class="result-card">
+                    <div class="label">Pendiente lineal</div>
+                    <div class="value" id="slopeZRZ">-</div>
+                    <div class="unit">µm/m²</div>
+                </div>
+                <div class="result-card">
+                    <div class="label">Puntos medidos</div>
+                    <div class="value" id="pointCount">-</div>
+                    <div class="unit">posiciones</div>
+                </div>
+            </div>
+
+            <div class="data-table-container">
+                <table id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th>Z (mm)</th>
+                            <th>A_error (µm)</th>
+                            <th>B_error (µm)</th>
+                            <th>ZRZ (µm/mm)</th>
+                            <th>ZRZ (µm/m)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="btn-group">
+                <button onclick="exportCSV()">💾 Exportar resultados a CSV</button>
+            </div>
+        </div>
+
+        <div id="chartSection" class="section hidden">
+            <h2>4. Gráfico ZRZ vs Z</h2>
+            <div id="chartContainer">
+                <canvas id="zrzChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let data = [];
+        let results = [];
+        let chart = null;
+
+        window.onload = function() {
+            for (let i = 0; i < 5; i++) {
+                addRow();
+            }
+        };
+
+        function addRow() {
+            const tbody = document.getElementById('dataTableBody');
+            const row = tbody.insertRow();
+            
+            row.innerHTML = `
+                <td><input type="number" step="0.001" placeholder="0.0" oninput="hideWarning('dataWarning')"></td>
+                <td><input type="number" step="0.001" placeholder="0.0" oninput="hideWarning('dataWarning')"></td>
+                <td><input type="number" step="0.001" placeholder="0.0" oninput="hideWarning('dataWarning')"></td>
+                <td><button class="secondary" onclick="deleteRow(this)">❌</button></td>
+            `;
+        }
+
+        function deleteRow(btn) {
+            const row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        function clearData() {
+            if (confirm('¿Está seguro de que desea limpiar todos los datos?')) {
+                document.getElementById('dataTableBody').innerHTML = '';
+                for (let i = 0; i < 5; i++) {
+                    addRow();
+                }
+                hideWarning('dataWarning');
+            }
+        }
+
+        function loadSampleData() {
+            const sampleData = [
+                [0, 0.5, -0.3],
+                [50, 1.2, -0.8],
+                [100, 2.1, -1.5],
+                [150, 2.8, -2.2],
+                [200, 3.5, -2.8],
+                [250, 4.0, -3.2],
+                [300, 4.3, -3.5]
+            ];
+
+            document.getElementById('dataTableBody').innerHTML = '';
+            
+            sampleData.forEach(([z, a, b]) => {
+                const tbody = document.getElementById('dataTableBody');
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><input type="number" step="0.001" value="${z}" oninput="hideWarning('dataWarning')"></td>
+                    <td><input type="number" step="0.001" value="${a}" oninput="hideWarning('dataWarning')"></td>
+                    <td><input type="number" step="0.001" value="${b}" oninput="hideWarning('dataWarning')"></td>
+                    <td><button class="secondary" onclick="deleteRow(this)">❌</button></td>
+                `;
+            });
+
+            hideWarning('dataWarning');
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+                document.getElementById('dataTableBody').innerHTML = '';
+
+                let startRow = 0;
+                if (jsonData.length > 0 && isNaN(jsonData[0][0])) {
+                    startRow = 1;
+                }
+
+                for (let i = startRow; i < jsonData.length; i++) {
+                    const row = jsonData[i];
+                    if (row && row.length >= 3) {
+                        const tbody = document.getElementById('dataTableBody');
+                        const tr = tbody.insertRow();
+                        tr.innerHTML = `
+                            <td><input type="number" step="0.001" value="${row[0] || ''}" oninput="hideWarning('dataWarning')"></td>
+                            <td><input type="number" step="0.001" value="${row[1] || ''}" oninput="hideWarning('dataWarning')"></td>
+                            <td><input type="number" step="0.001" value="${row[2] || ''}" oninput="hideWarning('dataWarning')"></td>
+                            <td><button class="secondary" onclick="deleteRow(this)">❌</button></td>
+                        `;
+                    }
+                }
+
+                hideWarning('dataWarning');
+            };
+
+            if (file.name.endsWith('.csv')) {
+                reader.readAsText(file);
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    const rows = text.split('\n').map(row => row.split(/[,;\t]/));
+                    
+                    document.getElementById('dataTableBody').innerHTML = '';
+                    
+                    let startRow = 0;
+                    if (rows.length > 0 && isNaN(rows[0][0])) {
+                        startRow = 1;
+                    }
+
+                    for (let i = startRow; i < rows.length; i++) {
+                        const row = rows[i];
+                        if (row && row.length >= 3 && row[0].trim() !== '') {
+                            const tbody = document.getElementById('dataTableBody');
+                            const tr = tbody.insertRow();
+                            tr.innerHTML = `
+                                <td><input type="number" step="0.001" value="${row[0].trim()}" oninput="hideWarning('dataWarning')"></td>
+                                <td><input type="number" step="0.001" value="${row[1].trim()}" oninput="hideWarning('dataWarning')"></td>
+                                <td><input type="number" step="0.001" value="${row[2].trim()}" oninput="hideWarning('dataWarning')"></td>
+                                <td><button class="secondary" onclick="deleteRow(this)">❌</button></td>
+                            `;
+                        }
+                    }
+                };
+            } else {
+                reader.readAsArrayBuffer(file);
+            }
+        }
+
+        function hideWarning(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function validateAndReadData() {
+            const R = parseFloat(document.getElementById('radioInput').value);
+            if (isNaN(R) || R <= 0) {
+                document.getElementById('radioWarning').classList.remove('hidden');
+                return null;
+            }
+            document.getElementById('radioWarning').classList.add('hidden');
+
+            const tbody = document.getElementById('dataTableBody');
+            const rows = tbody.getElementsByTagName('tr');
+            const data = [];
+            let hasIncomplete = false;
+
+            for (let row of rows) {
+                const inputs = row.getElementsByTagName('input');
+                const z = parseFloat(inputs[0].value);
+                const a_error = parseFloat(inputs[1].value);
+                const b_error = parseFloat(inputs[2].value);
+
+                if (!isNaN(z) && !isNaN(a_error) && !isNaN(b_error)) {
+                    data.push({ z, a_error, b_error });
+                } else if (inputs[0].value || inputs[1].value || inputs[2].value) {
+                    hasIncomplete = true;
+                }
+            }
+
+            if (hasIncomplete) {
+                document.getElementById('dataWarning').classList.remove('hidden');
+            } else {
+                document.getElementById('dataWarning').classList.add('hidden');
+            }
+
+            if (data.length === 0) {
+                alert('No hay datos válidos para calcular. Por favor, introduzca al menos una fila completa.');
+                return null;
+            }
+
+            return { R, data };
+        }
+
+        function calculateZRZ() {
+            const validated = validateAndReadData();
+            if (!validated) return;
+
+            const { R, data } = validated;
+            
+            results = data.map(point => {
+                const zrz_um_mm = (point.a_error - point.b_error) / (2 * R);
+                const zrz_um_m = zrz_um_mm * 1000;
+                
+                return {
+                    z: point.z,
+                    a_error: point.a_error,
+                    b_error: point.b_error,
+                    zrz_um_mm: zrz_um_mm,
+                    zrz_um_m: zrz_um_m
+                };
+            });
+
+            const zrz_values = results.map(r => r.zrz_um_m);
+            const mean = zrz_values.reduce((a, b) => a + b, 0) / zrz_values.length;
+            
+            const z_values = results.map(r => r.z);
+            const n = results.length;
+            const sum_z = z_values.reduce((a, b) => a + b, 0);
+            const sum_zrz = zrz_values.reduce((a, b) => a + b, 0);
+            const sum_z_zrz = z_values.reduce((acc, z, i) => acc + z * zrz_values[i], 0);
+            const sum_z_sq = z_values.reduce((acc, z) => acc + z * z, 0);
+            
+            const slope = (n * sum_z_zrz - sum_z * sum_zrz) / (n * sum_z_sq - sum_z * sum_z);
+
+            document.getElementById('meanZRZ').textContent = mean.toFixed(4);
+            document.getElementById('slopeZRZ').textContent = slope.toFixed(6);
+            document.getElementById('pointCount').textContent = n;
+
+            const resultsBody = document.getElementById('resultsTableBody');
+            resultsBody.innerHTML = '';
+            
+            results.forEach(r => {
+                const row = resultsBody.insertRow();
+                row.innerHTML = `
+                    <td>${r.z.toFixed(3)}</td>
+                    <td>${r.a_error.toFixed(3)}</td>
+                    <td>${r.b_error.toFixed(3)}</td>
+                    <td>${r.zrz_um_mm.toFixed(6)}</td>
+                    <td>${r.zrz_um_m.toFixed(4)}</td>
+                `;
+            });
+
+            document.getElementById('resultsSection').classList.remove('hidden');
+            document.getElementById('chartSection').classList.remove('hidden');
+
+            createChart();
+
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function createChart() {
+            const ctx = document.getElementById('zrzChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            const z_values = results.map(r => r.z);
+            const zrz_values = results.map(r => r.zrz_um_m);
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: z_values,
+                    datasets: [{
+                        label: 'ZRZ (µm/m)',
+                        data: zrz_values,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#3498db',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Error ZRZ en función de la posición Z',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Z (mm)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'ZRZ (µm/m)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function exportCSV() {
+            if (results.length === 0) {
+                alert('No hay resultados para exportar. Primero calcule los valores ZRZ.');
+                return;
+            }
+
+            let csv = 'Z (mm),A_error (µm),B_error (µm),ZRZ (µm/mm),ZRZ (µm/m)\n';
+            
+            results.forEach(r => {
+                csv += `${r.z},${r.a_error},${r.b_error},${r.zrz_um_mm},${r.zrz_um_m}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'resultados_ZRZ.csv');
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        document.getElementById('radioInput').addEventListener('input', function() {
+            hideWarning('radioWarning');
+        });
+    </script>
+</body>
+</html>
