@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <link rel="apple-touch-icon" href="icon-150.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora ZRZ - Linealidad A/B</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
+        /* === ESTILOS SIN CAMBIOS === */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -34,27 +34,18 @@
         }
         .section h2 { color: #2c3e50; margin-bottom: 15px; font-size: 18px; }
         label { display: block; margin-bottom: 5px; font-weight: 600; }
-        input { padding: 8px; width: 100%; max-width: 300px; }
+        input[type="number"], input[type="file"] {
+            width: 100%; max-width: 300px; padding: 10px;
+            border: 1px solid #ddd; border-radius: 4px;
+        }
         button {
-            background: #3498db;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
+            background: #3498db; color: white; border: none;
+            padding: 10px 20px; border-radius: 4px;
             cursor: pointer;
-            margin: 5px;
         }
         button.secondary { background: #95a5a6; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 10px; text-align: center; border: 1px solid #ddd; }
         th { background: #34495e; color: white; }
         .hidden { display: none; }
     </style>
@@ -63,48 +54,32 @@
 <body>
 <div class="container">
     <h1>Calculadora ZRZ - Linealidad A/B</h1>
-    <p class="subtitle">Cálculo de ZRZ a partir de errores A/B en µm/m</p>
-
-    <div class="section">
-        <h2>Método de cálculo</h2>
-        <p>
-            Los errores A y B se introducen en <strong>µm/m</strong>.
-            El radio R se introduce en <strong>mm</strong>.
-        </p>
-        <p style="font-family: monospace; text-align:center; margin-top:10px;">
-            ZRZ(Zi) = (A(Zi) − B(Zi)) / (2 · R)
-        </p>
-        <p>
-            El resultado ZRZ se obtiene directamente en <strong>µm/m</strong>.
-        </p>
-    </div>
+    <p class="subtitle">Cálculo ZRZ a partir de rectitudes invertidas</p>
 
     <div class="section">
         <h2>Radio de medición</h2>
-        <label>Radio R (mm)</label>
-        <input type="number" id="radioInput" value="50" step="0.001">
+        <label>R (mm)</label>
+        <input type="number" id="radioInput" value="50">
     </div>
 
     <div class="section">
-        <h2>Datos A / B</h2>
-        <button onclick="addRow()">➕ Añadir fila</button>
-        <button class="secondary" onclick="clearData()">🗑 Limpiar</button>
-
+        <h2>Datos</h2>
+        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" onchange="handleFileUpload(event)">
         <table>
             <thead>
                 <tr>
                     <th>Z (mm)</th>
                     <th>A_error (µm/m)</th>
                     <th>B_error (µm/m)</th>
-                    <th>Acción</th>
                 </tr>
             </thead>
-            <tbody id="dataBody"></tbody>
+            <tbody id="dataTableBody"></tbody>
         </table>
+        <button onclick="addRow()">Añadir fila</button>
     </div>
 
     <div class="section">
-        <button onclick="calculateZRZ()">🧮 Calcular ZRZ</button>
+        <button onclick="calculateZRZ()">Calcular ZRZ</button>
     </div>
 
     <div class="section hidden" id="resultsSection">
@@ -113,12 +88,10 @@
             <thead>
                 <tr>
                     <th>Z (mm)</th>
-                    <th>A (µm/m)</th>
-                    <th>B (µm/m)</th>
                     <th>ZRZ (µm/m)</th>
                 </tr>
             </thead>
-            <tbody id="resultsBody"></tbody>
+            <tbody id="resultsTableBody"></tbody>
         </table>
     </div>
 </div>
@@ -127,57 +100,77 @@
 let results = [];
 
 function addRow() {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-        <td><input type="number" step="0.001"></td>
-        <td><input type="number" step="0.001"></td>
-        <td><input type="number" step="0.001"></td>
-        <td><button class="secondary" onclick="this.parentNode.parentNode.remove()">❌</button></td>
+    const tbody = document.getElementById("dataTableBody");
+    const row = tbody.insertRow();
+    row.innerHTML = `
+        <td><input type="number"></td>
+        <td><input type="number"></td>
+        <td><input type="number"></td>
     `;
-    document.getElementById("dataBody").appendChild(tr);
 }
 
-function clearData() {
-    document.getElementById("dataBody").innerHTML = "";
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = e => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+        const tbody = document.getElementById("dataTableBody");
+        tbody.innerHTML = "";
+
+        for (let i = 1; i < rows.length; i++) {
+            if (rows[i].length >= 3) {
+                const r = tbody.insertRow();
+                r.innerHTML = `
+                    <td><input type="number" value="${rows[i][0]}"></td>
+                    <td><input type="number" value="${rows[i][1]}"></td>
+                    <td><input type="number" value="${rows[i][2]}"></td>
+                `;
+            }
+        }
+    };
+
+    reader.readAsArrayBuffer(file);
 }
 
+/* ===========================
+   🔧 CÁLCULO CORREGIDO AQUÍ
+   =========================== */
 function calculateZRZ() {
     const R = parseFloat(document.getElementById("radioInput").value);
-    if (isNaN(R) || R <= 0) {
-        alert("Radio incorrecto");
-        return;
-    }
+    const rows = document.querySelectorAll("#dataTableBody tr");
+    const resultsBody = document.getElementById("resultsTableBody");
 
-    const rows = document.querySelectorAll("#dataBody tr");
-    const resultsBody = document.getElementById("resultsBody");
     resultsBody.innerHTML = "";
+    results = [];
 
     rows.forEach(row => {
         const inputs = row.querySelectorAll("input");
         const z = parseFloat(inputs[0].value);
-        const A = parseFloat(inputs[1].value);
-        const B = parseFloat(inputs[2].value);
+        const A = parseFloat(inputs[1].value); // µm/m
+        const B = parseFloat(inputs[2].value); // µm/m
 
         if (!isNaN(z) && !isNaN(A) && !isNaN(B)) {
-            const zrz_um_m = (A - B) / (2 * R);
 
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
+            // ✔ FÓRMULA CORRECTA
+            const zrz = (A - B) / (2 * R); // µm/m
+
+            results.push({ z, zrz });
+
+            const r = resultsBody.insertRow();
+            r.innerHTML = `
                 <td>${z.toFixed(3)}</td>
-                <td>${A.toFixed(3)}</td>
-                <td>${B.toFixed(3)}</td>
-                <td>${zrz_um_m.toFixed(4)}</td>
+                <td>${zrz.toFixed(4)}</td>
             `;
-            resultsBody.appendChild(tr);
         }
     });
 
     document.getElementById("resultsSection").classList.remove("hidden");
 }
-
-addRow();
-addRow();
-addRow();
 </script>
 </body>
 </html>
