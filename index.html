@@ -1,679 +1,1746 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
-    <link rel="apple-touch-icon" href="icon-150.png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora ZRZ - Linealidad A/B</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InvestCheck — Calculadora de Rentabilidad de Alquiler</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161922;
+    --surface2: #1e2330;
+    --border: #2a3040;
+    --accent: #c8f135;
+    --accent2: #3af0c4;
+    --danger: #ff4d6d;
+    --warn: #ffb830;
+    --text: #e8eaf0;
+    --muted: #7a8299;
+    --card-radius: 16px;
+    --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+  }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f5f5;
-            padding: 20px;
-            color: #333;
-        }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
+body {
+background: var(–bg);
+color: var(–text);
+font-family: ‘Outfit’, sans-serif;
+font-size: 15px;
+line-height: 1.6;
+min-height: 100vh;
+overflow-x: hidden;
+}
 
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
+/* ─── BACKGROUND GRAIN ─── */
+body::before {
+content: ‘’;
+position: fixed;
+inset: 0;
+background-image: url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 256 256’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘noise’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.9’ numOctaves=‘4’ stitchTiles=‘stitch’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23noise)’ opacity=‘0.04’/%3E%3C/svg%3E”);
+pointer-events: none;
+z-index: 0;
+}
 
-        .subtitle {
-            color: #7f8c8d;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
+/* ─── HEADER ─── */
+header {
+position: sticky;
+top: 0;
+z-index: 100;
+background: rgba(13,15,20,0.85);
+backdrop-filter: blur(18px);
+border-bottom: 1px solid var(–border);
+padding: 0 32px;
+height: 64px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+.logo {
+display: flex; align-items: center; gap: 10px;
+font-family: ‘DM Serif Display’, serif;
+font-size: 22px;
+letter-spacing: -0.5px;
+}
+.logo-dot { width: 10px; height: 10px; background: var(–accent); border-radius: 50%; display: inline-block; }
+.header-actions { display: flex; gap: 12px; align-items: center; }
 
-        .section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #fafafa;
-            border-radius: 6px;
-            border-left: 4px solid #3498db;
-        }
+/* ─── LAYOUT ─── */
+.container { max-width: 1340px; margin: 0 auto; padding: 32px 24px; position: relative; z-index: 1; }
 
-        .section h2 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
+/* ─── TABS ─── */
+.tabs { display: flex; gap: 4px; background: var(–surface); border-radius: 12px; padding: 4px; margin-bottom: 32px; width: fit-content; }
+.tab-btn {
+padding: 8px 20px; border-radius: 9px; border: none; background: transparent;
+color: var(–muted); font-family: ‘Outfit’, sans-serif; font-size: 14px; font-weight: 500;
+cursor: pointer; transition: var(–transition);
+}
+.tab-btn.active { background: var(–surface2); color: var(–text); }
+.tab-btn:hover:not(.active) { color: var(–text); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
 
-        .input-group {
-            margin-bottom: 15px;
-        }
+/* ─── SECTION LABEL ─── */
+.section-label {
+font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+color: var(–accent); margin-bottom: 14px;
+}
 
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #555;
-            font-size: 14px;
-        }
+/* ─── GRID ─── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+.col-span-2 { grid-column: span 2; }
+@media(max-width:900px) {
+.grid-2, .grid-3 { grid-template-columns: 1fr; }
+.col-span-2 { grid-column: span 1; }
+}
 
-        input[type="number"],
-        input[type="file"] {
-            width: 100%;
-            max-width: 300px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
+/* ─── CARD ─── */
+.card {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: var(–card-radius);
+padding: 24px;
+transition: var(–transition);
+}
+.card:hover { border-color: #3a4560; }
+.card-title {
+font-family: ‘DM Serif Display’, serif;
+font-size: 17px;
+margin-bottom: 20px;
+display: flex; align-items: center; gap: 8px;
+}
+.card-title .icon { font-size: 18px; }
 
-        input[type="number"]:focus,
-        input[type="file"]:focus {
-            outline: none;
-            border-color: #3498db;
-        }
+/* ─── FORM FIELDS ─── */
+.field { margin-bottom: 16px; }
+.field label {
+display: block; font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
+color: var(–muted); margin-bottom: 6px; text-transform: uppercase;
+}
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.input-wrap { position: relative; }
+.input-wrap .prefix, .input-wrap .suffix {
+position: absolute; top: 50%; transform: translateY(-50%);
+font-size: 13px; color: var(–muted); font-family: ‘DM Mono’, monospace;
+pointer-events: none;
+}
+.input-wrap .prefix { left: 12px; }
+.input-wrap .suffix { right: 12px; }
+.input-wrap input { padding-left: 28px !important; }
+.input-wrap.suffix-right input { padding-right: 32px !important; }
 
-        button {
-            background: #3498db;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-right: 10px;
-            margin-bottom: 10px;
-            transition: background 0.3s;
-        }
+input, select {
+width: 100%; padding: 10px 14px;
+background: var(–surface2); border: 1px solid var(–border);
+border-radius: 9px; color: var(–text);
+font-family: ‘DM Mono’, monospace; font-size: 14px;
+transition: var(–transition); outline: none;
+appearance: none;
+}
+input:focus, select:focus { border-color: var(–accent); box-shadow: 0 0 0 3px rgba(200,241,53,0.12); }
+input[type=range] {
+padding: 4px 0; background: transparent; border: none; box-shadow: none;
+accent-color: var(–accent); cursor: pointer;
+}
+select { background-image: url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.org/2000/svg’ width=‘12’ height=‘8’ viewBox=‘0 0 12 8’%3E%3Cpath d=‘M1 1l5 5 5-5’ stroke=’%237a8299’ stroke-width=‘1.5’ fill=‘none’ stroke-linecap=‘round’/%3E%3C/svg%3E”); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
 
-        button:hover {
-            background: #2980b9;
-        }
+.helper { font-size: 11px; color: var(–muted); margin-top: 4px; font-style: italic; }
 
-        button.secondary {
-            background: #95a5a6;
-        }
+/* ─── TOGGLE ─── */
+.toggle-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.toggle {
+width: 40px; height: 22px; background: var(–surface2); border-radius: 11px;
+position: relative; cursor: pointer; border: 1px solid var(–border); flex-shrink: 0;
+transition: var(–transition);
+}
+.toggle.on { background: var(–accent); border-color: var(–accent); }
+.toggle::after {
+content: ‘’; position: absolute; top: 2px; left: 2px;
+width: 16px; height: 16px; border-radius: 50%;
+background: var(–muted); transition: var(–transition);
+}
+.toggle.on::after { left: 20px; background: var(–bg); }
+.toggle-label { font-size: 13px; font-weight: 500; }
 
-        button.secondary:hover {
-            background: #7f8c8d;
-        }
+/* ─── METRICS GRID ─── */
+.metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+@media(max-width:1000px) { .metrics-grid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:600px) { .metrics-grid { grid-template-columns: 1fr; } }
 
-        .data-table-container {
-            overflow-x: auto;
-            margin-top: 15px;
-        }
+.metric-card {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: var(–card-radius);
+padding: 20px;
+position: relative;
+overflow: hidden;
+transition: var(–transition);
+}
+.metric-card::before {
+content: ‘’; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+background: var(–accent);
+opacity: 0;
+transition: var(–transition);
+}
+.metric-card:hover::before { opacity: 1; }
+.metric-card.good::before { opacity: 1; background: var(–accent2); }
+.metric-card.warn::before { opacity: 1; background: var(–warn); }
+.metric-card.bad::before { opacity: 1; background: var(–danger); }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
+.metric-label { font-size: 11px; color: var(–muted); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+.metric-value { font-family: ‘DM Serif Display’, serif; font-size: 28px; line-height: 1.1; }
+.metric-value.good { color: var(–accent2); }
+.metric-value.warn { color: var(–warn); }
+.metric-value.bad { color: var(–danger); }
+.metric-sub { font-size: 11px; color: var(–muted); margin-top: 4px; }
+.metric-badge {
+display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 1px;
+padding: 2px 7px; border-radius: 20px; margin-top: 6px; text-transform: uppercase;
+}
+.metric-badge.good { background: rgba(58,240,196,0.15); color: var(–accent2); }
+.metric-badge.warn { background: rgba(255,184,48,0.15); color: var(–warn); }
+.metric-badge.bad { background: rgba(255,77,109,0.15); color: var(–danger); }
 
-        th, td {
-            padding: 10px;
-            text-align: center;
-            border: 1px solid #ddd;
-        }
+/* ─── VERDICT BANNER ─── */
+.verdict {
+border-radius: var(–card-radius);
+padding: 24px 28px;
+margin-bottom: 24px;
+display: flex; align-items: center; gap: 20px;
+border: 1px solid;
+position: relative; overflow: hidden;
+animation: fadeSlideIn 0.4s ease both;
+}
+@keyframes fadeSlideIn { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
+.verdict.rentable { background: rgba(58,240,196,0.07); border-color: rgba(58,240,196,0.3); }
+.verdict.no-rentable { background: rgba(255,77,109,0.07); border-color: rgba(255,77,109,0.3); }
+.verdict.limite { background: rgba(255,184,48,0.07); border-color: rgba(255,184,48,0.3); }
+.verdict-icon { font-size: 40px; flex-shrink: 0; }
+.verdict-title { font-family: ‘DM Serif Display’, serif; font-size: 22px; }
+.verdict-desc { font-size: 13px; color: var(–muted); margin-top: 4px; max-width: 600px; }
 
-        th {
-            background: #34495e;
-            color: white;
-            font-weight: 600;
-        }
+/* ─── IMPROVEMENTS PANEL ─── */
+.improvements { display: flex; flex-direction: column; gap: 12px; }
+.improvement-item {
+display: flex; align-items: flex-start; gap: 14px;
+background: var(–surface2); border-radius: 10px; padding: 14px 16px;
+border-left: 3px solid var(–warn);
+}
+.improvement-item.solved { border-left-color: var(–accent2); opacity: 0.6; }
+.improvement-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.improvement-title { font-weight: 600; font-size: 13px; }
+.improvement-desc { font-size: 12px; color: var(–muted); margin-top: 2px; }
+.improvement-target {
+font-family: ‘DM Mono’, monospace; font-size: 12px;
+color: var(–accent); margin-top: 4px;
+}
 
-        td input {
-            width: 100%;
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-            text-align: center;
-        }
+/* ─── CASHFLOW TABLE ─── */
+.cf-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cf-table th {
+text-align: left; padding: 8px 12px;
+font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+color: var(–muted); font-weight: 600; border-bottom: 1px solid var(–border);
+}
+.cf-table td { padding: 10px 12px; border-bottom: 1px solid rgba(42,48,64,0.5); }
+.cf-table tr:last-child td { border: none; font-weight: 700; color: var(–text); }
+.cf-table .val { font-family: ‘DM Mono’, monospace; text-align: right; }
+.cf-table .positive { color: var(–accent2); }
+.cf-table .negative { color: var(–danger); }
+.cf-table .neutral { color: var(–warn); }
+.cf-table tr.total-row { background: rgba(200,241,53,0.04); }
+.cf-table tr.total-row td { font-weight: 700; border-top: 1px solid var(–border); }
 
-        .warning {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 12px;
-            margin: 15px 0;
-            border-radius: 4px;
-            color: #856404;
-        }
+/* ─── MINI GAUGE ─── */
+.gauge-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.gauge-svg { overflow: visible; }
 
-        .info-box {
-            background: #e8f4f8;
-            border-left: 4px solid #17a2b8;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-            font-size: 14px;
-            line-height: 1.6;
-        }
+/* ─── SIMULATOR ─── */
+.sim-controls { display: flex; flex-direction: column; gap: 14px; }
+.sim-row { display: flex; align-items: center; gap: 14px; }
+.sim-row label { font-size: 12px; color: var(–muted); width: 160px; flex-shrink: 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.sim-row input[type=range] { flex: 1; }
+.sim-val { font-family: ‘DM Mono’, monospace; font-size: 13px; color: var(–accent); width: 80px; text-align: right; flex-shrink: 0; }
+.sim-result {
+margin-top: 20px; padding: 16px;
+background: var(–surface2); border-radius: 10px;
+display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
+text-align: center;
+}
+.sim-result-item .sim-result-label { font-size: 10px; color: var(–muted); text-transform: uppercase; letter-spacing: 1px; }
+.sim-result-item .sim-result-val { font-family: ‘DM Serif Display’, serif; font-size: 22px; margin-top: 4px; }
 
-        .info-box h3 {
-            color: #0c5460;
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
+/* ─── OPERATIONS LIST ─── */
+.op-list { display: flex; flex-direction: column; gap: 12px; }
+.op-item {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 12px;
+padding: 16px 20px;
+display: flex; align-items: center; gap: 16px;
+cursor: pointer; transition: var(–transition);
+}
+.op-item:hover { border-color: var(–accent); }
+.op-badge {
+width: 44px; height: 44px; border-radius: 10px;
+display: flex; align-items: center; justify-content: center;
+font-size: 20px; flex-shrink: 0;
+background: var(–surface2);
+}
+.op-info { flex: 1; }
+.op-name { font-weight: 600; font-size: 14px; }
+.op-meta { font-size: 12px; color: var(–muted); margin-top: 2px; }
+.op-metrics { display: flex; gap: 20px; }
+.op-metric-item { text-align: right; }
+.op-metric-item .oml { font-size: 10px; color: var(–muted); text-transform: uppercase; letter-spacing: 1px; }
+.op-metric-item .omv { font-family: ‘DM Mono’, monospace; font-size: 14px; font-weight: 600; }
+.op-actions { display: flex; gap: 8px; }
 
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
+/* ─── BUTTONS ─── */
+.btn {
+display: inline-flex; align-items: center; gap: 6px;
+padding: 9px 18px; border-radius: 9px; border: none;
+font-family: ‘Outfit’, sans-serif; font-size: 14px; font-weight: 600;
+cursor: pointer; transition: var(–transition);
+}
+.btn-primary { background: var(–accent); color: var(–bg); }
+.btn-primary:hover { background: #d9ff50; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(200,241,53,0.3); }
+.btn-secondary { background: var(–surface2); color: var(–text); border: 1px solid var(–border); }
+.btn-secondary:hover { border-color: var(–accent); color: var(–accent); }
+.btn-danger { background: rgba(255,77,109,0.15); color: var(–danger); border: 1px solid rgba(255,77,109,0.3); }
+.btn-danger:hover { background: rgba(255,77,109,0.25); }
+.btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 7px; }
+.btn-icon { padding: 8px; width: 34px; height: 34px; justify-content: center; }
 
-        .result-card {
-            background: white;
-            padding: 15px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
+/* ─── PROGRESS BAR ─── */
+.progress-bar { height: 6px; background: var(–surface2); border-radius: 3px; overflow: hidden; margin-top: 8px; }
+.progress-fill { height: 100%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1); }
 
-        .result-card .label {
-            font-size: 12px;
-            color: #7f8c8d;
-            margin-bottom: 5px;
-        }
+/* ─── TOOLTIP ─── */
+.tooltip-wrap { position: relative; display: inline-flex; }
+.tooltip-wrap:hover .tooltip-box { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.tooltip-box {
+position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%) translateY(4px);
+background: #2a3040; border: 1px solid var(–border);
+border-radius: 8px; padding: 8px 12px;
+font-size: 12px; color: var(–text); width: 220px;
+opacity: 0; pointer-events: none; transition: var(–transition); z-index: 200;
+white-space: normal; text-align: left; line-height: 1.5;
+}
+.tooltip-btn { width: 16px; height: 16px; border-radius: 50%; background: var(–surface2); border: 1px solid var(–border); color: var(–muted); font-size: 10px; display: inline-flex; align-items: center; justify-content: center; cursor: help; margin-left: 6px; vertical-align: middle; }
 
-        .result-card .value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
+/* ─── ITP INFO BOX ─── */
+.itp-info { background: rgba(200,241,53,0.06); border: 1px solid rgba(200,241,53,0.2); border-radius: 10px; padding: 12px 16px; font-size: 13px; margin-top: 12px; }
+.itp-info strong { color: var(–accent); }
 
-        .result-card .unit {
-            font-size: 14px;
-            color: #95a5a6;
-        }
+/* ─── CHART BARS ─── */
+.mini-bars { display: flex; gap: 6px; align-items: flex-end; height: 60px; margin-top: 12px; }
+.mini-bar { flex: 1; border-radius: 4px 4px 0 0; position: relative; transition: height 0.5s cubic-bezier(0.4,0,0.2,1); }
+.mini-bar-label { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 9px; color: var(–muted); white-space: nowrap; }
 
-        #chartContainer {
-            margin-top: 20px;
-            background: white;
-            padding: 20px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-        }
+/* ─── MODAL ─── */
+.modal-overlay {
+position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+z-index: 500; display: flex; align-items: center; justify-content: center;
+opacity: 0; pointer-events: none; transition: var(–transition);
+}
+.modal-overlay.open { opacity: 1; pointer-events: auto; }
+.modal {
+background: var(–surface); border: 1px solid var(–border);
+border-radius: 20px; padding: 32px; width: min(90vw, 480px);
+transform: scale(0.96); transition: var(–transition);
+}
+.modal-overlay.open .modal { transform: scale(1); }
+.modal-title { font-family: ‘DM Serif Display’, serif; font-size: 22px; margin-bottom: 20px; }
 
-        .hidden {
-            display: none;
-        }
+/* ─── EMPTY STATE ─── */
+.empty-state { text-align: center; padding: 60px 20px; color: var(–muted); }
+.empty-state .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+.empty-state p { font-size: 14px; }
 
-        .btn-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
-    </style>
+/* ─── COMPARE TABLE ─── */
+.compare-table { width: 100%; border-collapse: collapse; }
+.compare-table th { padding: 10px 16px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(–muted); font-weight: 600; text-align: left; border-bottom: 1px solid var(–border); }
+.compare-table td { padding: 10px 16px; border-bottom: 1px solid rgba(42,48,64,0.4); font-size: 13px; }
+.compare-table .mono { font-family: ‘DM Mono’, monospace; }
+.compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(–bg); }
+::-webkit-scrollbar-thumb { background: var(–border); border-radius: 3px; }
+
+/* ─── DIVIDER ─── */
+.divider { height: 1px; background: var(–border); margin: 24px 0; }
+
+.mb-4 { margin-bottom: 16px; }
+.mb-6 { margin-bottom: 24px; }
+.mt-4 { margin-top: 16px; }
+.flex { display: flex; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+.text-muted { color: var(–muted); }
+.text-sm { font-size: 13px; }
+.fw-600 { font-weight: 600; }
+.font-mono { font-family: ‘DM Mono’, monospace; }
+
+/* ─── NOTA FISCAL ─── */
+.nota-fiscal { font-size: 11px; color: var(–muted); font-style: italic; margin-top: 8px; }
+
+/* ─── RENTABILITY SCORE ─── */
+.score-ring-wrap { display: flex; align-items: center; gap: 24px; }
+.score-labels { display: flex; flex-direction: column; gap: 8px; }
+.score-label-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.score-label-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>Calculadora ZRZ - Linealidad A/B</h1>
-        <p class="subtitle">Herramienta de calibración para conversión de errores de linealidad</p>
 
-        <div class="info-box">
-            <h3>📐 Método de cálculo</h3>
-            <p>
-                <strong>ZRZ</strong> se calcula a partir de la diferencia de errores A/B dividida por 2·R según la fórmula:
-            </p>
-            <p style="text-align: center; margin: 10px 0; font-family: monospace; font-size: 15px;">
-                ZRZ(Z<sub>i</sub>) = (A_error(Z<sub>i</sub>) − B_error(Z<sub>i</sub>)) / (2 · R)
-            </p>
-            <p>
-                Este método es equivalente al método por inversión (90° / −90°) usado en calibración de máquinas de medición por coordenadas.
-                El resultado se expresa en µm/mm y µm/m.
-            </p>
+<header>
+  <div class="logo">
+    <span class="logo-dot"></span>
+    InvestCheck
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-secondary btn-sm" onclick="openModal('nueva-op')">＋ Nueva operación</button>
+    <button class="btn btn-primary btn-sm" id="calcular-btn" onclick="calcularYMostrar()">Calcular</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- TABS -->
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('calculadora', this)">🏠 Calculadora</button>
+    <button class="tab-btn" onclick="switchTab('analisis', this)">📊 Análisis</button>
+    <button class="tab-btn" onclick="switchTab('simulador', this)">🎛️ Simulador</button>
+    <button class="tab-btn" onclick="switchTab('operaciones', this)">📁 Operaciones</button>
+    <button class="tab-btn" onclick="switchTab('comparar', this)">⚖️ Comparar</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ TAB: CALCULADORA -->
+
+  <div id="tab-calculadora" class="tab-content active">
+    <div class="grid-2">
+
+```
+  <!-- COL IZQUIERDA -->
+  <div style="display:flex; flex-direction:column; gap:20px;">
+
+    <!-- LOCALIZACIÓN -->
+    <div class="card">
+      <div class="card-title"><span class="icon">📍</span> Localización</div>
+      <div class="field">
+        <label>Nombre / Dirección</label>
+        <input type="text" id="direccion" placeholder="Ej: Piso Salamanca centro, C/ Mayor 12" value="Calle xxx">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Comunidad Autónoma</label>
+          <select id="comunidad" onchange="actualizarITP()">
+            <option value="">Seleccionar...</option>
+            <option value="Andalucía" data-itp="0.08">Andalucía — 8%</option>
+            <option value="Aragón" data-itp="0.08">Aragón — 8%</option>
+            <option value="Asturias" data-itp="0.08">Asturias — 8%</option>
+            <option value="Baleares" data-itp="0.08">Baleares — 8%</option>
+            <option value="Canarias" data-itp="0.065">Canarias — 6.5%</option>
+            <option value="Cantabria" data-itp="0.10">Cantabria — 10%</option>
+            <option value="Castilla - La Mancha" data-itp="0.09">Castilla-La Mancha — 9%</option>
+            <option value="Castilla León" data-itp="0.08" selected>Castilla y León — 8%</option>
+            <option value="Cataluña" data-itp="0.10">Cataluña — 10%</option>
+            <option value="Ceuta" data-itp="0.06">Ceuta — 6%</option>
+            <option value="Comunidad de Madrid" data-itp="0.06">Madrid — 6%</option>
+            <option value="Comunidad Valenciana" data-itp="0.10">C. Valenciana — 10%</option>
+            <option value="Extremadura" data-itp="0.08">Extremadura — 8%</option>
+            <option value="Galicia" data-itp="0.09">Galicia — 9%</option>
+            <option value="La Rioja" data-itp="0.07">La Rioja — 7%</option>
+            <option value="Melilla" data-itp="0.06">Melilla — 6%</option>
+            <option value="Murcia" data-itp="0.08">Murcia — 8%</option>
+            <option value="Navarra" data-itp="0.06">Navarra — 6%</option>
+            <option value="País Vasco" data-itp="0.04">País Vasco — 4%</option>
+          </select>
         </div>
-
-        <div class="section">
-            <h2>1. Radio de medición (R)</h2>
-            <div class="input-group">
-                <label for="radioInput">Radio R (mm):</label>
-                <input type="number" id="radioInput" step="0.001" placeholder="Ej: 50.0" value="50">
-            </div>
-            <div id="radioWarning" class="warning hidden">
-                ⚠️ El radio debe ser un valor positivo mayor que cero.
-            </div>
-        </div>
-
-        <div class="section">
-            <h2>2. Datos de medición</h2>
-            
-            <div class="btn-group">
-                <button onclick="loadSampleData()">📝 Cargar datos de ejemplo</button>
-                <button class="secondary" onclick="addRow()">➕ Añadir fila</button>
-                <button class="secondary" onclick="clearData()">🗑️ Limpiar tabla</button>
-            </div>
-
-            <div class="input-group" style="margin-top: 20px;">
-                <label for="fileInput">Importar archivo CSV o Excel:</label>
-                <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" onchange="handleFileUpload(event)">
-            </div>
-
-            <div class="data-table-container">
-                <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>Z (mm)</th>
-                            <th>A_error (µm)</th>
-                            <th>B_error (µm)</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dataTableBody">
-                    </tbody>
-                </table>
-            </div>
-
-            <div id="dataWarning" class="warning hidden">
-                ⚠️ Algunas filas tienen datos incompletos. Complete todos los campos para calcular.
-            </div>
-        </div>
-
-        <div class="section">
-            <button onclick="calculateZRZ()" style="font-size: 16px; padding: 12px 30px;">🧮 Calcular ZRZ</button>
-        </div>
-
-        <div id="resultsSection" class="section hidden">
-            <h2>3. Resultados del cálculo</h2>
-            
-            <div class="results-grid">
-                <div class="result-card">
-                    <div class="label">ZRZ Medio</div>
-                    <div class="value" id="meanZRZ">-</div>
-                    <div class="unit">µm/m</div>
+        <div class="field">
+          <label>
+            ITP Aplicable
+            <span class="tooltip-wrap">
+              <button class="tooltip-btn">?</button>
+              <span class="tooltip-box">El ITP se carga automáticamente según la comunidad. Puedes editarlo manualmente si se aplica valor catastral (ej: Cataluña ley 2022).</span>
+            </span>
+          </label>
+          <div class="toggle-wrap" style="margin-bottom:8px;">
+            <div class="toggle" id="itp-toggle" onclick="toggleItpManual(this)"></div>
+            <span class="toggle-label text-sm text-muted">ITP manual (valor catastral)</span>
+          </div>
+          <div id="itp-auto-display" class="input-wrap">
+            <span class="prefix">%</span>
+            <input type="number" id="itp-display" value="8" readonly style="opacity:0.6;">
+          </div>
+          <div id="itp-manual-wrap" style="display:none;">
+            <div class="field-row" style="margin-top:8px;">
+              <div class="field" style="margin:0">
+                <label style="margin-bottom:4px">% ITP</label>
+                <div class="input-wrap">
+                  <span class="prefix">%</span>
+                  <input type="number" id="itp-manual-pct" step="0.1" value="10" oninput="sincronizarITP()">
                 </div>
-                <div class="result-card">
-                    <div class="label">Pendiente lineal</div>
-                    <div class="value" id="slopeZRZ">-</div>
-                    <div class="unit">µm/m²</div>
+              </div>
+              <div class="field" style="margin:0">
+                <label style="margin-bottom:4px">Importe ITP (€)</label>
+                <div class="input-wrap">
+                  <span class="prefix">€</span>
+                  <input type="number" id="itp-manual-importe" step="100" value="13700" oninput="sincronizarITPimporte()">
                 </div>
-                <div class="result-card">
-                    <div class="label">Puntos medidos</div>
-                    <div class="value" id="pointCount">-</div>
-                    <div class="unit">posiciones</div>
-                </div>
+              </div>
             </div>
-
-            <div class="data-table-container">
-                <table id="resultsTable">
-                    <thead>
-                        <tr>
-                            <th>Z (mm)</th>
-                            <th>A_error (µm)</th>
-                            <th>B_error (µm)</th>
-                            <th>ZRZ (µm/mm)</th>
-                            <th>ZRZ (µm/m)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="resultsTableBody">
-                    </tbody>
-                </table>
+            <div class="itp-info">
+              <strong>ℹ️ ITP manual activo</strong> — Útil cuando el valor catastral supera el precio de compra (ej: Cataluña ley 2022). Introduce el importe exacto que te ha calculado la gestora.
             </div>
-
-            <div class="btn-group">
-                <button onclick="exportCSV()">💾 Exportar resultados a CSV</button>
-            </div>
+          </div>
         </div>
-
-        <div id="chartSection" class="section hidden">
-            <h2>4. Gráfico ZRZ vs Z</h2>
-            <div id="chartContainer">
-                <canvas id="zrzChart"></canvas>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <script>
-        let data = [];
-        let results = [];
-        let chart = null;
+    <!-- COSTE DE COMPRA -->
+    <div class="card">
+      <div class="card-title"><span class="icon">🏷️</span> Coste de Adquisición</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Precio de compra
+            <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">Precio escriturado. Es la base sobre la que se calcula el ITP automático.</span></span>
+          </label>
+          <div class="input-wrap"><span class="prefix">€</span><input type="number" id="precio" value="165000" oninput="actualizarITP(); calcularYMostrar()"></div>
+        </div>
+        <div class="field">
+          <label>Impuesto ITP
+            <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">Se calcula automáticamente. Si usas ITP manual, introduce el importe exacto.</span></span>
+          </label>
+          <div class="input-wrap"><span class="prefix">€</span><input type="number" id="itp-importe" readonly style="opacity:0.6;" value="13200"></div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Notaría y registro</label>
+          <div class="input-wrap"><span class="prefix">€</span><input type="number" id="notaria" value="4000" oninput="calcularYMostrar()"></div>
+        </div>
+        <div class="field">
+          <label>Gastos de hipoteca</label>
+          <div class="input-wrap"><span class="prefix">€</span><input type="number" id="gastos-hipoteca" value="0" oninput="calcularYMostrar()"></div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Coste reforma</label>
+          <div class="input-wrap"><span class="prefix">€</span><input type="number" id="reforma" value="0" oninput="calcularYMostrar()"></div>
+        </div>
+        <div class="field">
+          <label>Comisión agencia compra</label>
+          <div class="input-wrap"><span class="prefix">€</span><input type="number" id="comision" value="1500" oninput="calcularYMostrar()"></div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Mobiliario y otros</label>
+          <div class="input-wrap"><span class="prefix">€</span><input type="number" id="mobiliario" value="0" oninput="calcularYMostrar()"></div>
+        </div>
+        <div class="field">
+          <label>Reserva contingencias
+            <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">Fondo de maniobra recomendado para imprevistos (derramas, averías). Se suma al capital aportado.</span></span>
+          </label>
+          <div class="input-wrap"><span class="prefix">€</span><input type="number" id="contingencias" value="3000" oninput="calcularYMostrar()"></div>
+        </div>
+      </div>
+      <div class="flex-between mt-4" style="background:var(--surface2);border-radius:10px;padding:12px 16px;">
+        <span class="text-sm text-muted fw-600">TOTAL INVERSIÓN</span>
+        <span class="font-mono fw-600" id="total-compra-display" style="color:var(--accent)">—</span>
+      </div>
+    </div>
 
-        window.onload = function() {
-            for (let i = 0; i < 5; i++) {
-                addRow();
-            }
-        };
+    <!-- FINANCIACIÓN -->
+    <div class="card">
+      <div class="card-title"><span class="icon">🏦</span> Financiación</div>
+      <div class="toggle-wrap mb-4">
+        <div class="toggle on" id="fin-toggle" onclick="toggleFinanciacion(this)"></div>
+        <span class="toggle-label">Usar hipoteca</span>
+      </div>
+      <div id="fin-wrap">
+        <div class="field-row">
+          <div class="field">
+            <label>% Financiado
+              <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">Porcentaje sobre el precio de compra que financia el banco. Normalmente 70-80%.</span></span>
+            </label>
+            <div class="input-wrap suffix-right">
+              <input type="number" id="pct-financiado" value="70" min="0" max="100" step="1" oninput="calcularYMostrar()">
+              <span class="suffix">%</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Plazo (años)</label>
+            <div class="input-wrap suffix-right">
+              <input type="number" id="plazo" value="25" min="5" max="40" oninput="calcularYMostrar()">
+              <span class="suffix">años</span>
+            </div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Tipo de interés (TIN)
+              <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">Tasa de Interés Nominal anual. Para hipoteca variable, introduce la que te haya dado el banco actualmente.</span></span>
+            </label>
+            <div class="input-wrap suffix-right">
+              <input type="number" id="tin" value="2.8" step="0.05" min="0" max="15" oninput="calcularYMostrar()">
+              <span class="suffix">%</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Capital hipotecado (€)</label>
+            <div class="input-wrap"><span class="prefix">€</span><input type="number" id="hipoteca-capital" readonly style="opacity:0.6;" value="115500"></div>
+          </div>
+        </div>
+        <div class="flex-between mt-4" style="background:var(--surface2);border-radius:10px;padding:12px 16px;">
+          <span class="text-sm text-muted fw-600">CAPITAL PROPIO A APORTAR</span>
+          <span class="font-mono fw-600" id="capital-propio-display" style="color:var(--warn)">—</span>
+        </div>
+      </div>
+    </div>
 
-        function addRow() {
-            const tbody = document.getElementById('dataTableBody');
-            const row = tbody.insertRow();
-            
-            row.innerHTML = `
-                <td><input type="number" step="0.001" placeholder="0.0" oninput="hideWarning('dataWarning')"></td>
-                <td><input type="number" step="0.001" placeholder="0.0" oninput="hideWarning('dataWarning')"></td>
-                <td><input type="number" step="0.001" placeholder="0.0" oninput="hideWarning('dataWarning')"></td>
-                <td><button class="secondary" onclick="deleteRow(this)">❌</button></td>
-            `;
-        }
+  </div>
 
-        function deleteRow(btn) {
-            const row = btn.parentNode.parentNode;
-            row.parentNode.removeChild(row);
-        }
+  <!-- COL DERECHA -->
+  <div style="display:flex; flex-direction:column; gap:20px;">
 
-        function clearData() {
-            if (confirm('¿Está seguro de que desea limpiar todos los datos?')) {
-                document.getElementById('dataTableBody').innerHTML = '';
-                for (let i = 0; i < 5; i++) {
-                    addRow();
-                }
-                hideWarning('dataWarning');
-            }
-        }
+    <!-- INGRESOS -->
+    <div class="card">
+      <div class="card-title"><span class="icon">💰</span> Ingresos</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Cuota de alquiler mensual</label>
+          <div class="input-wrap"><span class="prefix">€</span><input type="number" id="alquiler" value="550" oninput="calcularYMostrar()"></div>
+        </div>
+        <div class="field">
+          <label>Ingresos alquiler anuales</label>
+          <div class="input-wrap"><span class="prefix">€</span><input type="number" id="alquiler-anual" readonly style="opacity:0.6;" value="6600"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>% Revalorización anual esperada
+          <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">Estimación de cuánto se revalorizará el inmueble al año. 2% aprox. inflación. Afecta a la rentabilidad total pero no al cash-flow.</span></span>
+        </label>
+        <div class="field-row" style="align-items:center;">
+          <input type="range" id="revalorizacion-range" min="0" max="10" step="0.5" value="2" oninput="syncRevalorizacion(this.value)">
+          <div class="input-wrap suffix-right" style="width:120px">
+            <input type="number" id="revalorizacion" value="2" step="0.5" min="0" max="10" oninput="syncRevalorizacionInput(this.value)">
+            <span class="suffix">%</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        function loadSampleData() {
-            const sampleData = [
-                [0, 0.5, -0.3],
-                [50, 1.2, -0.8],
-                [100, 2.1, -1.5],
-                [150, 2.8, -2.2],
-                [200, 3.5, -2.8],
-                [250, 4.0, -3.2],
-                [300, 4.3, -3.5]
-            ];
+    <!-- GASTOS ANUALES -->
+    <div class="card">
+      <div class="card-title"><span class="icon">📉</span> Gastos Anuales
+        <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">Introduce los gastos anuales. Los gastos de la hipoteca se calculan aparte en la sección de financiación.</span></span>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>IBI + Basuras</label>
+          <div class="input-wrap"><span class="prefix">€</span><input type="number" id="ibi" value="800" oninput="calcularYMostrar()"></div>
+        </div>
+        <div class="field">
+          <label>Seguro hogar / vida / impago</label>
+          <div class="input-wrap"><span class="prefix">€</span><input type="number" id="seguros" value="400" oninput="calcularYMostrar()"></div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Comunidad de propietarios</label>
+          <div class="input-wrap"><span class="prefix">€</span><input type="number" id="comunidad-gastos" value="420" oninput="calcularYMostrar()"></div>
+        </div>
+        <div class="field">
+          <label>Mantenimiento / reparaciones</label>
+          <div class="input-wrap"><span class="prefix">€</span><input type="number" id="mantenimiento" value="0" oninput="calcularYMostrar()"></div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Meses vacíos al año
+            <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">Coste de rotación de inquilinos. 1 mes al año es una estimación conservadora habitual.</span></span>
+          </label>
+          <div class="input-wrap suffix-right">
+            <input type="number" id="meses-vacio" value="0" min="0" max="12" step="0.5" oninput="calcularYMostrar()">
+            <span class="suffix">meses</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Gestión agencia alquiler
+            <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">Si delegas la gestión en una agencia. Suele ser el 8-10% de los ingresos anuales.</span></span>
+          </label>
+          <div class="input-wrap suffix-right">
+            <input type="number" id="gestion-pct" value="0" min="0" max="20" step="1" oninput="calcularYMostrar()">
+            <span class="suffix">%</span>
+          </div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>IRPF rendimiento capital
+            <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">Tipo marginal que tributarás por los rendimientos de capital inmobiliario. Habitual 19-45%. Activa para ver el cash-flow fiscal real. La reducción del 60% en alquiler habitual se aplica automáticamente.</span></span>
+          </label>
+          <div class="toggle-wrap mb-4" style="margin-bottom:0;">
+            <div class="toggle" id="irpf-toggle" onclick="toggleIRPF(this)"></div>
+            <span class="toggle-label text-sm text-muted">Incluir impacto fiscal IRPF</span>
+          </div>
+        </div>
+        <div class="field" id="irpf-wrap" style="display:none;">
+          <label>Tipo IRPF aplicable</label>
+          <div class="input-wrap suffix-right">
+            <input type="number" id="irpf-tipo" value="30" min="0" max="50" step="1" oninput="calcularYMostrar()">
+            <span class="suffix">%</span>
+          </div>
+          <div class="nota-fiscal">Con reducción 60% alquiler habitual</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="flex-between">
+        <span class="text-sm text-muted fw-600">TOTAL GASTOS ANUALES</span>
+        <span class="font-mono fw-600" id="total-gastos-display">—</span>
+      </div>
+    </div>
 
-            document.getElementById('dataTableBody').innerHTML = '';
-            
-            sampleData.forEach(([z, a, b]) => {
-                const tbody = document.getElementById('dataTableBody');
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td><input type="number" step="0.001" value="${z}" oninput="hideWarning('dataWarning')"></td>
-                    <td><input type="number" step="0.001" value="${a}" oninput="hideWarning('dataWarning')"></td>
-                    <td><input type="number" step="0.001" value="${b}" oninput="hideWarning('dataWarning')"></td>
-                    <td><button class="secondary" onclick="deleteRow(this)">❌</button></td>
-                `;
-            });
+    <!-- RESUMEN RÁPIDO -->
+    <div class="card">
+      <div class="card-title"><span class="icon">⚡</span> Resumen Hipoteca</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;" id="hipoteca-resumen">
+        <div>
+          <div class="metric-label">Cuota mensual</div>
+          <div class="font-mono fw-600" id="cuota-hipoteca-display" style="font-size:18px;">—</div>
+        </div>
+        <div>
+          <div class="metric-label">Capital propio</div>
+          <div class="font-mono fw-600" id="capital-propio-display2" style="font-size:18px; color:var(--warn)">—</div>
+        </div>
+        <div>
+          <div class="metric-label">Intereses (promedio)</div>
+          <div class="font-mono" id="intereses-display" style="font-size:14px;">—</div>
+        </div>
+        <div>
+          <div class="metric-label">Amortización (promedio)</div>
+          <div class="font-mono" id="amort-display" style="font-size:14px;">—</div>
+        </div>
+      </div>
+    </div>
 
-            hideWarning('dataWarning');
-        }
+  </div>
+</div><!-- /grid-2 -->
 
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+<!-- BOTÓN CALCULAR GRANDE -->
+<div style="text-align:center; margin:28px 0;">
+  <button class="btn btn-primary" onclick="calcularYMostrar()" style="padding:14px 48px; font-size:16px; letter-spacing:0.5px;">
+    ▶ Calcular rentabilidad
+  </button>
+</div>
+```
 
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+  </div><!-- /tab-calculadora -->
 
-                document.getElementById('dataTableBody').innerHTML = '';
+  <!-- ══════════════════════════════════════════════ TAB: ANÁLISIS -->
 
-                let startRow = 0;
-                if (jsonData.length > 0 && isNaN(jsonData[0][0])) {
-                    startRow = 1;
-                }
+  <div id="tab-analisis" class="tab-content">
 
-                for (let i = startRow; i < jsonData.length; i++) {
-                    const row = jsonData[i];
-                    if (row && row.length >= 3) {
-                        const tbody = document.getElementById('dataTableBody');
-                        const tr = tbody.insertRow();
-                        tr.innerHTML = `
-                            <td><input type="number" step="0.001" value="${row[0] || ''}" oninput="hideWarning('dataWarning')"></td>
-                            <td><input type="number" step="0.001" value="${row[1] || ''}" oninput="hideWarning('dataWarning')"></td>
-                            <td><input type="number" step="0.001" value="${row[2] || ''}" oninput="hideWarning('dataWarning')"></td>
-                            <td><button class="secondary" onclick="deleteRow(this)">❌</button></td>
-                        `;
-                    }
-                }
+```
+<!-- VERDICT -->
+<div id="verdict-banner" class="verdict rentable" style="display:none;">
+  <div class="verdict-icon" id="verdict-icon">🎯</div>
+  <div>
+    <div class="verdict-title" id="verdict-title">—</div>
+    <div class="verdict-desc" id="verdict-desc">—</div>
+  </div>
+</div>
 
-                hideWarning('dataWarning');
-            };
+<!-- MÉTRICAS PRINCIPALES -->
+<div class="metrics-grid" id="metrics-grid">
+  <div class="metric-card">
+    <div class="metric-label">Rent. bruta
+      <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">Ingresos alquiler / Total inversión. Sin descontar ningún gasto.</span></span>
+    </div>
+    <div class="metric-value" id="m-bruta">—</div>
+    <div class="progress-bar"><div class="progress-fill" id="pb-bruta" style="width:0%;background:var(--accent2)"></div></div>
+    <div class="metric-sub">Mín. recomendado: <strong>5%</strong></div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">Rent. neta
+      <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">(Ingresos - gastos operativos) / Total inversión. No incluye hipoteca.</span></span>
+    </div>
+    <div class="metric-value" id="m-neta">—</div>
+    <div class="progress-bar"><div class="progress-fill" id="pb-neta" style="width:0%;background:var(--accent)"></div></div>
+    <div class="metric-sub">Objetivo: <strong>≥ 5%</strong></div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">Cash-Flow mensual
+      <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">Alquiler - hipoteca - gastos mensuales. Es el dinero que entra o sale de tu bolsillo cada mes.</span></span>
+    </div>
+    <div class="metric-value" id="m-cf">—</div>
+    <div class="metric-sub" id="m-cf-sub"></div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">Cash on Cash
+      <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">Cash-flow anual / Capital propio aportado. Mide el retorno real sobre tu dinero desembolsado.</span></span>
+    </div>
+    <div class="metric-value" id="m-coc">—</div>
+    <div class="progress-bar"><div class="progress-fill" id="pb-coc" style="width:0%;background:var(--accent)"></div></div>
+    <div class="metric-sub">Mejor métrica si hay hipoteca</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">ROCE
+      <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">Return On Capital Employed. Cash-flow neto / Capital propio. Mide la eficiencia del capital empleado.</span></span>
+    </div>
+    <div class="metric-value" id="m-roce">—</div>
+    <div class="metric-sub">Rendimiento s/ capital empleado</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">Rent. total s/ inversión
+      <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">ROCE + revalorización anual estimada del inmueble. La cifra más completa si se tiene perspectiva de largo plazo.</span></span>
+    </div>
+    <div class="metric-value" id="m-total">—</div>
+    <div class="metric-sub">Incluye revalorización</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">PER
+      <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">Price to Earnings Ratio. Años de alquiler para pagar el inmueble. Cuanto más bajo, mejor. Por debajo de 15 es buen indicador.</span></span>
+    </div>
+    <div class="metric-value" id="m-per">—</div>
+    <div class="metric-sub">Años para recuperar inversión</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">% Hipoteca / alquiler
+      <span class="tooltip-wrap"><button class="tooltip-btn">?</button><span class="tooltip-box">Cuota hipotecaria / Alquiler mensual. Por encima de 80% el margen es muy ajustado. Por debajo del 60% ideal.</span></span>
+    </div>
+    <div class="metric-value" id="m-ratio-hip">—</div>
+    <div class="metric-sub">Sostenibilidad del alquiler</div>
+  </div>
+</div><!-- /metrics-grid -->
 
-            if (file.name.endsWith('.csv')) {
-                reader.readAsText(file);
-                reader.onload = function(e) {
-                    const text = e.target.result;
-                    const rows = text.split('\n').map(row => row.split(/[,;\t]/));
-                    
-                    document.getElementById('dataTableBody').innerHTML = '';
-                    
-                    let startRow = 0;
-                    if (rows.length > 0 && isNaN(rows[0][0])) {
-                        startRow = 1;
-                    }
+<div class="grid-2">
+  <!-- CUENTA DE RESULTADOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Cuenta de Resultados Mensual</div>
+    <table class="cf-table">
+      <thead>
+        <tr><th>Concepto</th><th class="val">Mensual</th><th class="val">Anual</th></tr>
+      </thead>
+      <tbody id="cf-tbody">
+        <tr><td colspan="3" style="text-align:center;color:var(--muted);padding:24px;">Calcula para ver resultados</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-                    for (let i = startRow; i < rows.length; i++) {
-                        const row = rows[i];
-                        if (row && row.length >= 3 && row[0].trim() !== '') {
-                            const tbody = document.getElementById('dataTableBody');
-                            const tr = tbody.insertRow();
-                            tr.innerHTML = `
-                                <td><input type="number" step="0.001" value="${row[0].trim()}" oninput="hideWarning('dataWarning')"></td>
-                                <td><input type="number" step="0.001" value="${row[1].trim()}" oninput="hideWarning('dataWarning')"></td>
-                                <td><input type="number" step="0.001" value="${row[2].trim()}" oninput="hideWarning('dataWarning')"></td>
-                                <td><button class="secondary" onclick="deleteRow(this)">❌</button></td>
-                            `;
-                        }
-                    }
-                };
-            } else {
-                reader.readAsArrayBuffer(file);
-            }
-        }
+  <!-- MEJORAS NECESARIAS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔧</span> Plan de Mejora</div>
+    <div class="improvements" id="improvements-list">
+      <div class="empty-state" style="padding:30px 0;">
+        <div class="empty-icon">📊</div>
+        <p>Calcula para ver sugerencias de mejora</p>
+      </div>
+    </div>
+  </div>
+</div>
 
-        function hideWarning(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
+<!-- SEMÁFORO DE RATIOS -->
+<div class="card mt-4">
+  <div class="card-title"><span class="icon">🚦</span> Semáforo de Ratios</div>
+  <div id="semaforo-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-top:8px;">
+    <!-- Se rellena dinámicamente -->
+  </div>
+</div>
+```
 
-        function validateAndReadData() {
-            const R = parseFloat(document.getElementById('radioInput').value);
-            if (isNaN(R) || R <= 0) {
-                document.getElementById('radioWarning').classList.remove('hidden');
-                return null;
-            }
-            document.getElementById('radioWarning').classList.add('hidden');
+  </div><!-- /tab-analisis -->
 
-            const tbody = document.getElementById('dataTableBody');
-            const rows = tbody.getElementsByTagName('tr');
-            const data = [];
-            let hasIncomplete = false;
+  <!-- ══════════════════════════════════════════════ TAB: SIMULADOR -->
 
-            for (let row of rows) {
-                const inputs = row.getElementsByTagName('input');
-                const z = parseFloat(inputs[0].value);
-                const a_error = parseFloat(inputs[1].value);
-                const b_error = parseFloat(inputs[2].value);
+  <div id="tab-simulador" class="tab-content">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title"><span class="icon">🎛️</span> Simulador "¿Qué necesito?"</div>
+        <p class="text-sm text-muted mb-4">Ajusta las palancas para ver en tiempo real cómo cambia la rentabilidad. Objetivo mínimo: <strong style="color:var(--accent)">5% rentabilidad neta</strong>.</p>
+        <div class="sim-controls" id="sim-controls">
+          <div class="sim-row">
+            <label>Alquiler mensual</label>
+            <input type="range" id="s-alquiler" min="200" max="5000" step="25" value="550" oninput="simular()">
+            <div class="sim-val" id="sv-alquiler">550 €</div>
+          </div>
+          <div class="sim-row">
+            <label>Precio de compra</label>
+            <input type="range" id="s-precio" min="30000" max="1000000" step="1000" value="165000" oninput="simular()">
+            <div class="sim-val" id="sv-precio">165.000 €</div>
+          </div>
+          <div class="sim-row">
+            <label>% Financiado</label>
+            <input type="range" id="s-financiado" min="0" max="100" step="5" value="70" oninput="simular()">
+            <div class="sim-val" id="sv-financiado">70%</div>
+          </div>
+          <div class="sim-row">
+            <label>Tipo interés</label>
+            <input type="range" id="s-tin" min="0.5" max="8" step="0.1" value="2.8" oninput="simular()">
+            <div class="sim-val" id="sv-tin">2.8%</div>
+          </div>
+          <div class="sim-row">
+            <label>Gastos anuales</label>
+            <input type="range" id="s-gastos" min="0" max="10000" step="100" value="1620" oninput="simular()">
+            <div class="sim-val" id="sv-gastos">1.620 €</div>
+          </div>
+        </div>
 
-                if (!isNaN(z) && !isNaN(a_error) && !isNaN(b_error)) {
-                    data.push({ z, a_error, b_error });
-                } else if (inputs[0].value || inputs[1].value || inputs[2].value) {
-                    hasIncomplete = true;
-                }
-            }
+```
+    <div class="sim-result mt-4">
+      <div class="sim-result-item">
+        <div class="sim-result-label">Rent. neta</div>
+        <div class="sim-result-val" id="sim-neta">—</div>
+      </div>
+      <div class="sim-result-item">
+        <div class="sim-result-label">Cash-Flow mes</div>
+        <div class="sim-result-val" id="sim-cf">—</div>
+      </div>
+      <div class="sim-result-item">
+        <div class="sim-result-label">Cash on Cash</div>
+        <div class="sim-result-val" id="sim-coc">—</div>
+      </div>
+    </div>
 
-            if (hasIncomplete) {
-                document.getElementById('dataWarning').classList.remove('hidden');
-            } else {
-                document.getElementById('dataWarning').classList.add('hidden');
-            }
+    <div id="sim-verdict" style="margin-top:16px; padding:12px 16px; border-radius:10px; font-size:13px; font-weight:600; text-align:center;"></div>
+  </div>
 
-            if (data.length === 0) {
-                alert('No hay datos válidos para calcular. Por favor, introduzca al menos una fila completa.');
-                return null;
-            }
+  <!-- PUNTO DE EQUILIBRIO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">⚖️</span> Punto de Equilibrio</div>
+    <p class="text-sm text-muted mb-4">Para que esta operación sea rentable al 5% neto, necesitas al menos:</p>
+    <div id="pe-content" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="background:var(--surface2); border-radius:10px; padding:16px;">
+        <div class="metric-label">Alquiler mínimo necesario</div>
+        <div style="font-family:'DM Serif Display',serif; font-size:28px; color:var(--accent);" id="pe-alquiler">—</div>
+        <div class="metric-sub" id="pe-alquiler-sub"></div>
+      </div>
+      <div style="background:var(--surface2); border-radius:10px; padding:16px;">
+        <div class="metric-label">Precio máximo de compra recomendado</div>
+        <div style="font-family:'DM Serif Display',serif; font-size:28px; color:var(--warn);" id="pe-precio">—</div>
+        <div class="metric-sub" id="pe-precio-sub"></div>
+      </div>
+      <div style="background:var(--surface2); border-radius:10px; padding:16px;">
+        <div class="metric-label">Gastos máximos sostenibles</div>
+        <div style="font-family:'DM Serif Display',serif; font-size:28px; color:var(--accent2);" id="pe-gastos">—</div>
+      </div>
+      <div style="background:var(--surface2); border-radius:10px; padding:16px;">
+        <div class="metric-label">Margen actual vs objetivo</div>
+        <div style="font-family:'DM Serif Display',serif; font-size:28px;" id="pe-margen">—</div>
+        <div class="progress-bar mt-4"><div class="progress-fill" id="pb-margen" style="width:0%;background:var(--accent2)"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+```
 
-            return { R, data };
-        }
+  </div><!-- /tab-simulador -->
 
-        function calculateZRZ() {
-            const validated = validateAndReadData();
-            if (!validated) return;
+  <!-- ══════════════════════════════════════════════ TAB: OPERACIONES -->
 
-            const { R, data } = validated;
-            
-            results = data.map(point => {
-                const zrz_um_mm = (point.a_error - point.b_error) / (2 * R);
-                const zrz_um_m = zrz_um_mm * 1000;
-                
-                return {
-                    z: point.z,
-                    a_error: point.a_error,
-                    b_error: point.b_error,
-                    zrz_um_mm: zrz_um_mm,
-                    zrz_um_m: zrz_um_m
-                };
-            });
+  <div id="tab-operaciones" class="tab-content">
+    <div class="flex-between mb-6">
+      <h2 style="font-family:'DM Serif Display',serif; font-size:22px;">Operaciones guardadas</h2>
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-secondary" onclick="exportarCSV()">⬇ Exportar CSV</button>
+        <button class="btn btn-primary" onclick="guardarOperacion()">💾 Guardar actual</button>
+      </div>
+    </div>
+    <div id="op-list" class="op-list">
+      <div class="empty-state">
+        <div class="empty-icon">🏠</div>
+        <p>No hay operaciones guardadas.<br>Calcula una propiedad y pulsa <strong>Guardar actual</strong>.</p>
+      </div>
+    </div>
+  </div><!-- /tab-operaciones -->
 
-            const zrz_values = results.map(r => r.zrz_um_m);
-            const mean = zrz_values.reduce((a, b) => a + b, 0) / zrz_values.length;
-            
-            const z_values = results.map(r => r.z);
-            const n = results.length;
-            const sum_z = z_values.reduce((a, b) => a + b, 0);
-            const sum_zrz = zrz_values.reduce((a, b) => a + b, 0);
-            const sum_z_zrz = z_values.reduce((acc, z, i) => acc + z * zrz_values[i], 0);
-            const sum_z_sq = z_values.reduce((acc, z) => acc + z * z, 0);
-            
-            const slope = (n * sum_z_zrz - sum_z * sum_zrz) / (n * sum_z_sq - sum_z * sum_z);
+  <!-- ══════════════════════════════════════════════ TAB: COMPARAR -->
 
-            document.getElementById('meanZRZ').textContent = mean.toFixed(4);
-            document.getElementById('slopeZRZ').textContent = slope.toFixed(6);
-            document.getElementById('pointCount').textContent = n;
+  <div id="tab-comparar" class="tab-content">
+    <div class="flex-between mb-6">
+      <h2 style="font-family:'DM Serif Display',serif; font-size:22px;">Comparador de operaciones</h2>
+      <span class="text-sm text-muted">Selecciona operaciones guardadas para comparar</span>
+    </div>
+    <div id="compare-content">
+      <div class="empty-state">
+        <div class="empty-icon">⚖️</div>
+        <p>Guarda al menos 2 operaciones para poder compararlas.</p>
+      </div>
+    </div>
+  </div><!-- /tab-comparar -->
 
-            const resultsBody = document.getElementById('resultsTableBody');
-            resultsBody.innerHTML = '';
-            
-            results.forEach(r => {
-                const row = resultsBody.insertRow();
-                row.innerHTML = `
-                    <td>${r.z.toFixed(3)}</td>
-                    <td>${r.a_error.toFixed(3)}</td>
-                    <td>${r.b_error.toFixed(3)}</td>
-                    <td>${r.zrz_um_mm.toFixed(6)}</td>
-                    <td>${r.zrz_um_m.toFixed(4)}</td>
-                `;
-            });
+</div><!-- /container -->
 
-            document.getElementById('resultsSection').classList.remove('hidden');
-            document.getElementById('chartSection').classList.remove('hidden');
+<!-- MODAL NUEVA OPERACIÓN (nombre) -->
 
-            createChart();
+<div class="modal-overlay" id="modal-nueva-op">
+  <div class="modal">
+    <div class="modal-title">💾 Guardar operación</div>
+    <div class="field">
+      <label>Nombre de la operación</label>
+      <input type="text" id="modal-nombre" placeholder="Ej: Piso Salamanca centro" onkeydown="if(event.key==='Enter')confirmarGuardar()">
+    </div>
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button class="btn btn-secondary" onclick="closeModal('modal-nueva-op')" style="flex:1">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmarGuardar()" style="flex:1">Guardar</button>
+    </div>
+  </div>
+</div>
 
-            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+<script>
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let itpManual = false;
+let usaHipoteca = true;
+let usaIRPF = false;
+let resultado = null;
+let operaciones = JSON.parse(localStorage.getItem('investcheck-ops') || '[]');
 
-        function createChart() {
-            const ctx = document.getElementById('zrzChart').getContext('2d');
-            
-            if (chart) {
-                chart.destroy();
-            }
+// ═══════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'analisis' && resultado) renderAnalisis();
+  if (id === 'simulador') initSimulador();
+  if (id === 'operaciones') renderOperaciones();
+  if (id === 'comparar') renderComparar();
+}
 
-            const z_values = results.map(r => r.z);
-            const zrz_values = results.map(r => r.zrz_um_m);
+// ═══════════════════════════════════════════
+// ITP
+// ═══════════════════════════════════════════
+function actualizarITP() {
+  if (itpManual) return;
+  const sel = document.getElementById('comunidad');
+  const opt = sel.options[sel.selectedIndex];
+  const pct = parseFloat(opt.getAttribute('data-itp') || 0);
+  const precio = parseFloat(v('precio')) || 0;
+  const importe = precio * pct;
+  document.getElementById('itp-display').value = (pct * 100).toFixed(1);
+  document.getElementById('itp-importe').value = Math.round(importe);
+  calcularYMostrar();
+}
 
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: z_values,
-                    datasets: [{
-                        label: 'ZRZ (µm/m)',
-                        data: zrz_values,
-                        borderColor: '#3498db',
-                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
-                        borderWidth: 2,
-                        pointRadius: 5,
-                        pointBackgroundColor: '#3498db',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        },
-                        title: {
-                            display: true,
-                            text: 'Error ZRZ en función de la posición Z',
-                            font: {
-                                size: 16
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Z (mm)',
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                }
-                            },
-                            grid: {
-                                display: true,
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'ZRZ (µm/m)',
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                }
-                            },
-                            grid: {
-                                display: true,
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            }
-                        }
-                    }
-                }
-            });
-        }
+function toggleItpManual(el) {
+  itpManual = !itpManual;
+  el.classList.toggle('on', itpManual);
+  document.getElementById('itp-auto-display').style.display = itpManual ? 'none' : 'block';
+  document.getElementById('itp-manual-wrap').style.display = itpManual ? 'block' : 'none';
+  if (!itpManual) actualizarITP();
+  else calcularYMostrar();
+}
 
-        function exportCSV() {
-            if (results.length === 0) {
-                alert('No hay resultados para exportar. Primero calcule los valores ZRZ.');
-                return;
-            }
+function sincronizarITP() {
+  const pct = parseFloat(v('itp-manual-pct')) / 100;
+  const precio = parseFloat(v('precio')) || 0;
+  document.getElementById('itp-manual-importe').value = Math.round(precio * pct);
+  document.getElementById('itp-importe').value = Math.round(precio * pct);
+  calcularYMostrar();
+}
 
-            let csv = 'Z (mm),A_error (µm),B_error (µm),ZRZ (µm/mm),ZRZ (µm/m)\n';
-            
-            results.forEach(r => {
-                csv += `${r.z},${r.a_error},${r.b_error},${r.zrz_um_mm},${r.zrz_um_m}\n`;
-            });
+function sincronizarITPimporte() {
+  const imp = parseFloat(v('itp-manual-importe')) || 0;
+  const precio = parseFloat(v('precio')) || 0;
+  if (precio > 0) document.getElementById('itp-manual-pct').value = ((imp / precio) * 100).toFixed(2);
+  document.getElementById('itp-importe').value = imp;
+  calcularYMostrar();
+}
 
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            
-            link.setAttribute('href', url);
-            link.setAttribute('download', 'resultados_ZRZ.csv');
-            link.style.visibility = 'hidden';
-            
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+// ═══════════════════════════════════════════
+// FINANCIACIÓN
+// ═══════════════════════════════════════════
+function toggleFinanciacion(el) {
+  usaHipoteca = !usaHipoteca;
+  el.classList.toggle('on', usaHipoteca);
+  document.getElementById('fin-wrap').style.display = usaHipoteca ? 'block' : 'none';
+  calcularYMostrar();
+}
 
-        document.getElementById('radioInput').addEventListener('input', function() {
-            hideWarning('radioWarning');
-        });
-    </script>
+function toggleIRPF(el) {
+  usaIRPF = !usaIRPF;
+  el.classList.toggle('on', usaIRPF);
+  document.getElementById('irpf-wrap').style.display = usaIRPF ? 'block' : 'none';
+  calcularYMostrar();
+}
+
+// ═══════════════════════════════════════════
+// REVALORIZACIÓN SYNC
+// ═══════════════════════════════════════════
+function syncRevalorizacion(val) {
+  document.getElementById('revalorizacion').value = val;
+  calcularYMostrar();
+}
+function syncRevalorizacionInput(val) {
+  document.getElementById('revalorizacion-range').value = val;
+  calcularYMostrar();
+}
+
+// ═══════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════
+function v(id) { return document.getElementById(id)?.value || 0; }
+function fmtEur(n) { return n.toLocaleString('es-ES', {minimumFractionDigits:0, maximumFractionDigits:0}) + ' €'; }
+function fmtPct(n) { return (n * 100).toFixed(2) + '%'; }
+function fmtEurDec(n) { return n.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €'; }
+
+// ═══════════════════════════════════════════
+// CÁLCULO HIPOTECA (cuota francesa)
+// ═══════════════════════════════════════════
+function calcularHipoteca(capital, tin_pct, plazo_años) {
+  const n = plazo_años * 12;
+  const r = (tin_pct / 100) / 12;
+  if (r === 0) return { cuota: capital / n, intereses: 0, amortizacion: capital / n };
+  const cuota = capital * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
+  // Intereses del primer mes (para el promedio simplificado)
+  const intereses_primer = capital * r;
+  const intereses_ultimo = (capital / 2) * r;
+  const intereses_prom = (intereses_primer + intereses_ultimo) / 2;
+  const amort_prom = cuota - intereses_prom;
+  return { cuota, intereses: intereses_prom, amortizacion: amort_prom };
+}
+
+// ═══════════════════════════════════════════
+// CÁLCULO PRINCIPAL
+// ═══════════════════════════════════════════
+function calcular() {
+  const precio = parseFloat(v('precio')) || 0;
+  const itp = parseFloat(v('itp-importe')) || 0;
+  const notaria = parseFloat(v('notaria')) || 0;
+  const gHipoteca = parseFloat(v('gastos-hipoteca')) || 0;
+  const reforma = parseFloat(v('reforma')) || 0;
+  const comision = parseFloat(v('comision')) || 0;
+  const mobiliario = parseFloat(v('mobiliario')) || 0;
+  const contingencias = parseFloat(v('contingencias')) || 0;
+  const totalCompra = precio + itp + notaria + gHipoteca + reforma + comision + mobiliario + contingencias;
+
+  const alquilerMensual = parseFloat(v('alquiler')) || 0;
+  const alquilerAnual = alquilerMensual * 12;
+  const revalorizacion = parseFloat(v('revalorizacion')) / 100 || 0;
+
+  // Financiación
+  let cuotaHip = 0, interesesProm = 0, amortProm = 0, hipCapital = 0, capitalPropio = 0;
+  if (usaHipoteca) {
+    const pctFin = parseFloat(v('pct-financiado')) / 100 || 0;
+    const plazo = parseFloat(v('plazo')) || 25;
+    const tin = parseFloat(v('tin')) || 0;
+    hipCapital = precio * pctFin;
+    capitalPropio = totalCompra - hipCapital;
+    if (capitalPropio < 0) capitalPropio = 0;
+    const hip = calcularHipoteca(hipCapital, tin, plazo);
+    cuotaHip = hip.cuota;
+    interesesProm = hip.intereses;
+    amortProm = hip.amortizacion;
+  } else {
+    capitalPropio = totalCompra;
+  }
+
+  // Gastos anuales operativos
+  const ibi = parseFloat(v('ibi')) || 0;
+  const seguros = parseFloat(v('seguros')) || 0;
+  const comunidadG = parseFloat(v('comunidad-gastos')) || 0;
+  const mant = parseFloat(v('mantenimiento')) || 0;
+  const mesesVacio = parseFloat(v('meses-vacio')) || 0;
+  const gestionPct = parseFloat(v('gestion-pct')) / 100 || 0;
+
+  const perdidaVacio = alquilerMensual * mesesVacio;
+  const gestionImporte = alquilerAnual * gestionPct;
+  const gastosOp = ibi + seguros + comunidadG + mant + perdidaVacio + gestionImporte;
+  const gastosOpMensual = gastosOp / 12;
+
+  // IRPF (sobre beneficio con reducción 60% alquiler habitual)
+  let irpfAnual = 0;
+  if (usaIRPF) {
+    const tipo = parseFloat(v('irpf-tipo')) / 100 || 0;
+    // Base imponible: ingresos - gastos deducibles (intereses, seguros, IBI, comunidad, amort técnica 3%)
+    const gastosDeducibles = interesesProm * 12 + seguros + ibi + comunidadG + mant + precio * 0.03;
+    const basePrevia = alquilerAnual - gastosDeducibles;
+    const reduccion = Math.max(0, basePrevia * 0.6);
+    const baseImponible = Math.max(0, basePrevia - reduccion);
+    irpfAnual = baseImponible * tipo;
+  }
+
+  // Totales
+  const gastosAnualesTotal = gastosOp + irpfAnual;
+  const ingresosNetos = alquilerAnual - gastosAnualesTotal;
+  const cashflowMensual = alquilerMensual - cuotaHip - gastosOpMensual - irpfAnual / 12;
+  const cashflowAnual = cashflowMensual * 12;
+
+  // Métricas
+  const rentBruta = totalCompra > 0 ? alquilerAnual / totalCompra : 0;
+  const rentNeta = totalCompra > 0 ? ingresosNetos / totalCompra : 0;
+  const cashOnCash = capitalPropio > 0 ? cashflowAnual / capitalPropio : 0;
+  const roce = capitalPropio > 0 ? ingresosNetos / capitalPropio : 0;
+  const rentTotal = roce + revalorizacion;
+  const per = alquilerAnual > 0 ? totalCompra / alquilerAnual : 0;
+  const ratioHipAlquiler = alquilerMensual > 0 ? cuotaHip / alquilerMensual : 0;
+  const ratioConsumo = alquilerMensual > 0 ? (cuotaHip + gastosOpMensual) / alquilerMensual : 0;
+
+  // Actualizar campos readonly
+  document.getElementById('alquiler-anual').value = Math.round(alquilerAnual);
+  document.getElementById('hipoteca-capital').value = Math.round(hipCapital);
+  document.getElementById('itp-importe').value = Math.round(itp);
+
+  document.getElementById('total-compra-display').textContent = fmtEur(totalCompra);
+  document.getElementById('capital-propio-display').textContent = fmtEur(capitalPropio);
+  document.getElementById('capital-propio-display2').textContent = fmtEur(capitalPropio);
+  document.getElementById('cuota-hipoteca-display').textContent = fmtEurDec(cuotaHip);
+  document.getElementById('intereses-display').textContent = fmtEurDec(interesesProm) + '/mes';
+  document.getElementById('amort-display').textContent = fmtEurDec(amortProm) + '/mes';
+  document.getElementById('total-gastos-display').textContent = fmtEur(gastosAnualesTotal) + '/año';
+
+  return {
+    precio, itp, notaria, gHipoteca, reforma, comision, mobiliario, contingencias, totalCompra,
+    alquilerMensual, alquilerAnual, revalorizacion,
+    hipCapital, capitalPropio, cuotaHip, interesesProm, amortProm,
+    ibi, seguros, comunidadG, mant, perdidaVacio, gestionImporte, gastosOp, gastosOpMensual,
+    irpfAnual, gastosAnualesTotal,
+    ingresosNetos, cashflowMensual, cashflowAnual,
+    rentBruta, rentNeta, cashOnCash, roce, rentTotal, per, ratioHipAlquiler, ratioConsumo,
+    usaHipoteca
+  };
+}
+
+// ═══════════════════════════════════════════
+// RENDER ANÁLISIS
+// ═══════════════════════════════════════════
+function calcularYMostrar() {
+  resultado = calcular();
+  const r = resultado;
+
+  // Si estamos en pestaña análisis, renderizamos
+  if (document.getElementById('tab-analisis').classList.contains('active')) {
+    renderAnalisis();
+  }
+  if (document.getElementById('tab-simulador').classList.contains('active')) {
+    initSimulador();
+  }
+}
+
+function claseRenta(v) {
+  if (v >= 0.05) return 'good';
+  if (v >= 0.03) return 'warn';
+  return 'bad';
+}
+function claseCF(v) {
+  if (v > 100) return 'good';
+  if (v >= 0) return 'warn';
+  return 'bad';
+}
+
+function renderAnalisis() {
+  if (!resultado) return;
+  const r = resultado;
+
+  // Verdict
+  const banner = document.getElementById('verdict-banner');
+  banner.style.display = 'flex';
+  if (r.rentNeta >= 0.05) {
+    banner.className = 'verdict rentable';
+    document.getElementById('verdict-icon').textContent = '✅';
+    document.getElementById('verdict-title').textContent = 'Operación RENTABLE';
+    document.getElementById('verdict-desc').textContent = `Rentabilidad neta ${fmtPct(r.rentNeta)} ≥ 5% objetivo. Cash-flow mensual ${fmtEurDec(r.cashflowMensual)}. El inmueble se paga solo${r.cashflowMensual > 0 ? ' y genera excedente' : ''}.`;
+  } else if (r.rentNeta >= 0.03) {
+    banner.className = 'verdict limite';
+    document.getElementById('verdict-icon').textContent = '⚠️';
+    document.getElementById('verdict-title').textContent = 'Operación en el LÍMITE';
+    document.getElementById('verdict-desc').textContent = `Rentabilidad neta ${fmtPct(r.rentNeta)} — por debajo del objetivo del 5%. Hay margen de mejora. Revisa el plan de optimización.`;
+  } else {
+    banner.className = 'verdict no-rentable';
+    document.getElementById('verdict-icon').textContent = '🚫';
+    document.getElementById('verdict-title').textContent = 'Operación NO RENTABLE';
+    document.getElementById('verdict-desc').textContent = `Rentabilidad neta ${fmtPct(r.rentNeta)} — muy por debajo del mínimo del 5%. El cash-flow es ${fmtEurDec(r.cashflowMensual)}/mes. Revisa precio, alquiler o costes.`;
+  }
+
+  // Métricas
+  setMetrica('m-bruta', fmtPct(r.rentBruta), claseRenta(r.rentBruta), 'pb-bruta', Math.min(r.rentBruta/0.12*100,100));
+  setMetrica('m-neta', fmtPct(r.rentNeta), claseRenta(r.rentNeta), 'pb-neta', Math.min(r.rentNeta/0.10*100,100));
+  setMetrica('m-cf', fmtEurDec(r.cashflowMensual), claseCF(r.cashflowMensual));
+  document.getElementById('m-cf-sub').textContent = fmtEur(r.cashflowAnual) + ' anuales';
+  setMetrica('m-coc', fmtPct(r.cashOnCash), claseRenta(r.cashOnCash), 'pb-coc', Math.min(r.cashOnCash/0.15*100,100));
+  setMetrica('m-roce', fmtPct(r.roce), claseRenta(r.roce));
+  setMetrica('m-total', fmtPct(r.rentTotal), claseRenta(r.rentTotal));
+  setMetrica('m-per', r.per.toFixed(1) + ' años', r.per < 15 ? 'good' : r.per < 25 ? 'warn' : 'bad');
+  setMetrica('m-ratio-hip', fmtPct(r.ratioHipAlquiler), r.ratioHipAlquiler < 0.6 ? 'good' : r.ratioHipAlquiler < 0.8 ? 'warn' : 'bad');
+
+  // Cuenta de resultados
+  const rows = [
+    ['+ Ingresos alquiler', r.alquilerMensual, r.alquilerAnual, 'positive'],
+    ['− IBI + Basuras', -r.ibi/12, -r.ibi, 'negative'],
+    ['− Seguros', -r.seguros/12, -r.seguros, 'negative'],
+    ['− Comunidad', -r.comunidadG/12, -r.comunidadG, 'negative'],
+    ['− Mantenimiento', -r.mant/12, -r.mant, 'negative'],
+    r.perdidaVacio > 0 ? ['− Pérdida vacíos', -r.perdidaVacio/12, -r.perdidaVacio, 'negative'] : null,
+    r.gestionImporte > 0 ? ['− Gestión agencia', -r.gestionImporte/12, -r.gestionImporte, 'negative'] : null,
+    r.irpfAnual > 0 ? ['− IRPF est.', -r.irpfAnual/12, -r.irpfAnual, 'negative'] : null,
+    ['= Renta neta (sin hipoteca)', r.alquilerMensual - r.gastosOpMensual - r.irpfAnual/12, r.alquilerAnual - r.gastosAnualesTotal, 'neutral'],
+    r.usaHipoteca ? ['− Cuota hipoteca', -r.cuotaHip, -r.cuotaHip*12, 'negative'] : null,
+    ['= CASH-FLOW', r.cashflowMensual, r.cashflowAnual, r.cashflowMensual >= 0 ? 'positive' : 'negative'],
+  ].filter(Boolean);
+
+  const tbody = document.getElementById('cf-tbody');
+  tbody.innerHTML = rows.map((row, i) => {
+    const isTotalRow = row[0].startsWith('=');
+    return `<tr${isTotalRow ? ' class="total-row"' : ''}>
+      <td>${row[0]}</td>
+      <td class="val ${row[3]}">${fmtEurDec(row[1])}</td>
+      <td class="val ${row[3]}">${fmtEur(Math.round(row[2]))}</td>
+    </tr>`;
+  }).join('');
+
+  // Mejoras
+  renderMejoras(r);
+
+  // Semáforo
+  renderSemaforo(r);
+
+  // Punto de equilibrio
+  renderPuntoEquilibrio(r);
+}
+
+function setMetrica(id, valor, clase, pbId, pbWidth) {
+  const el = document.getElementById(id);
+  el.textContent = valor;
+  el.className = 'metric-value ' + clase;
+  el.closest('.metric-card').className = 'metric-card ' + clase;
+  if (pbId && pbWidth !== undefined) {
+    document.getElementById(pbId).style.width = Math.max(0, pbWidth) + '%';
+  }
+}
+
+// ═══════════════════════════════════════════
+// MEJORAS
+// ═══════════════════════════════════════════
+function renderMejoras(r) {
+  const list = document.getElementById('improvements-list');
+  const mejoras = [];
+
+  // 1. Alquiler bajo
+  const alquilerNecesario = (r.totalCompra * 0.05 + r.gastosAnualesTotal) / 12;
+  if (r.alquilerMensual < alquilerNecesario) {
+    mejoras.push({
+      icon: '📈', title: 'Subir el alquiler',
+      desc: `El alquiler actual no cubre el objetivo de rentabilidad neta del 5%.`,
+      target: `Alquiler mínimo necesario: ${fmtEurDec(alquilerNecesario)}/mes (actual: ${fmtEurDec(r.alquilerMensual)})`,
+      solved: false
+    });
+  }
+
+  // 2. Precio de compra alto
+  const precioMax = (r.alquilerAnual - r.gastosAnualesTotal) / 0.05;
+  if (r.totalCompra > precioMax * 1.05) {
+    mejoras.push({
+      icon: '🤝', title: 'Negociar el precio de compra',
+      desc: `El precio de adquisición es elevado para el alquiler esperado.`,
+      target: `Precio máximo recomendado: ${fmtEur(Math.round(precioMax))} (actual: ${fmtEur(r.totalCompra)})`,
+      solved: false
+    });
+  }
+
+  // 3. Cash-flow negativo
+  if (r.cashflowMensual < 0 && r.usaHipoteca) {
+    mejoras.push({
+      icon: '⚠️', title: 'Cash-flow negativo — bolsillo en riesgo',
+      desc: `Cada mes pagas ${fmtEurDec(Math.abs(r.cashflowMensual))} de tu bolsillo. Si tienes vacíos o imprevistos, puede ser insostenible.`,
+      target: `Considera: más entrada, mayor plazo, o aumentar ingresos.`,
+      solved: false
+    });
+  }
+
+  // 4. Ratio hipoteca/alquiler alto
+  if (r.ratioHipAlquiler > 0.8 && r.usaHipoteca) {
+    mejoras.push({
+      icon: '🏦', title: 'Cuota hipoteca muy alta vs alquiler',
+      desc: `La cuota hipotecaria representa el ${fmtPct(r.ratioHipAlquiler)} del alquiler. Margen muy ajustado.`,
+      target: `Busca un ratio <60%. Considera mayor entrada o tipo de interés fijo más bajo.`,
+      solved: false
+    });
+  }
+
+  // 5. Gastos elevados
+  if (r.gastosOp / r.alquilerAnual > 0.3) {
+    mejoras.push({
+      icon: '✂️', title: 'Gastos operativos elevados',
+      desc: `Los gastos operativos representan más del 30% de los ingresos.`,
+      target: `Revisa seguros (compara ofertas), comunidad y gestión de agencia.`,
+      solved: false
+    });
+  }
+
+  // 6. Vacíos
+  if (r.perdidaVacio === 0) {
+    mejoras.push({
+      icon: '📅', title: 'Contempla períodos de vacío',
+      desc: `Actualmente no has incluido meses sin inquilino. Incluso 1 mes/año puede cambiar significativamente el resultado.`,
+      target: `Introduce al menos 0.5-1 mes de vacío para un análisis conservador.`,
+      solved: false
+    });
+  }
+
+  // 7. Sin seguro impago
+  if (r.seguros < 200) {
+    mejoras.push({
+      icon: '🛡️', title: 'Valora seguro de impago de alquiler',
+      desc: `El coste de seguros es muy bajo. Un seguro de impago (~250-400€/año) te protege frente a morosos y da tranquilidad.`,
+      target: `Coste habitual: 3-5% de las rentas anuales.`,
+      solved: false
+    });
+  }
+
+  // 8. Sin reforma → potencial de subida
+  if (r.reforma === 0 && r.rentNeta < 0.05) {
+    mejoras.push({
+      icon: '🔨', title: 'Reforma para revalorizar y subir alquiler',
+      desc: `Una reforma bien planificada puede permitir subir el alquiler más que su coste amortizado.`,
+      target: `Analiza el coste/beneficio: si €10k reforma → +€80/mes alquiler, se amortiza en ~10 años.`,
+      solved: false
+    });
+  }
+
+  // Resueltos (si rentabilidad ok)
+  if (r.rentNeta >= 0.05) {
+    mejoras.push({ icon: '✅', title: 'Rentabilidad objetivo alcanzada', desc: `La operación supera el 5% neto objetivo.`, solved: true });
+  }
+  if (r.cashflowMensual >= 0) {
+    mejoras.push({ icon: '✅', title: 'Cash-flow positivo', desc: `La propiedad se paga sola con el alquiler.`, solved: true });
+  }
+
+  if (mejoras.length === 0) {
+    list.innerHTML = '<div class="empty-state" style="padding:30px 0;"><div class="empty-icon">🎉</div><p>No se detectan problemas.</p></div>';
+    return;
+  }
+
+  list.innerHTML = mejoras.map(m => `
+    <div class="improvement-item ${m.solved ? 'solved' : ''}">
+      <div class="improvement-icon">${m.icon}</div>
+      <div>
+        <div class="improvement-title">${m.title}</div>
+        <div class="improvement-desc">${m.desc}</div>
+        ${m.target ? `<div class="improvement-target">${m.target}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════
+// SEMÁFORO
+// ═══════════════════════════════════════════
+function renderSemaforo(r) {
+  const items = [
+    { label: 'Rent. bruta', val: fmtPct(r.rentBruta), ok: r.rentBruta >= 0.06, warn: r.rentBruta >= 0.04, desc: '≥6% ideal' },
+    { label: 'Rent. neta', val: fmtPct(r.rentNeta), ok: r.rentNeta >= 0.05, warn: r.rentNeta >= 0.03, desc: '≥5% objetivo' },
+    { label: 'Cash-flow', val: fmtEurDec(r.cashflowMensual)+'/mes', ok: r.cashflowMensual > 100, warn: r.cashflowMensual >= 0, desc: '>100€/mes ideal' },
+    { label: 'PER', val: r.per.toFixed(1)+' años', ok: r.per < 15, warn: r.per < 25, desc: '<15 ideal' },
+    { label: 'Hipoteca/alquiler', val: fmtPct(r.ratioHipAlquiler), ok: r.ratioHipAlquiler < 0.6, warn: r.ratioHipAlquiler < 0.8, desc: '<60% ideal' },
+    { label: 'Cash on Cash', val: fmtPct(r.cashOnCash), ok: r.cashOnCash >= 0.06, warn: r.cashOnCash >= 0.03, desc: '≥6% ideal' },
+    { label: 'Gastos/ingresos', val: fmtPct(r.gastosOp/r.alquilerAnual), ok: r.gastosOp/r.alquilerAnual < 0.25, warn: r.gastosOp/r.alquilerAnual < 0.35, desc: '<25% ideal' },
+    { label: 'Rent. total', val: fmtPct(r.rentTotal), ok: r.rentTotal >= 0.07, warn: r.rentTotal >= 0.05, desc: '≥7% ideal' },
+  ];
+
+  document.getElementById('semaforo-grid').innerHTML = items.map(it => {
+    const color = it.ok ? 'var(--accent2)' : it.warn ? 'var(--warn)' : 'var(--danger)';
+    const emoji = it.ok ? '🟢' : it.warn ? '🟡' : '🔴';
+    return `<div style="background:var(--surface2);border-radius:10px;padding:14px 16px;border:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:1px;">${it.label}</span>
+        <span>${emoji}</span>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:17px;color:${color};margin-top:4px;font-weight:600;">${it.val}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px;">${it.desc}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// PUNTO DE EQUILIBRIO
+// ═══════════════════════════════════════════
+function renderPuntoEquilibrio(r) {
+  // Alquiler mínimo para 5% neto
+  const alqMin = (r.totalCompra * 0.05 + r.gastosOp + r.irpfAnual + (r.usaHipoteca ? r.cuotaHip*12 : 0)) / 12;
+  const precioMax = r.alquilerAnual > 0 ? (r.alquilerAnual - r.gastosOp - r.irpfAnual) / 0.05 : 0;
+  const gastosMax = r.alquilerAnual - r.totalCompra * 0.05 - (r.usaHipoteca ? r.cuotaHip*12 : 0);
+
+  document.getElementById('pe-alquiler').textContent = fmtEurDec(alqMin) + '/mes';
+  document.getElementById('pe-alquiler-sub').textContent = `Diferencia: ${fmtEurDec(alqMin - r.alquilerMensual)}/mes ${alqMin > r.alquilerMensual ? '(necesitas más)' : '(ya lo cumples)'}`;
+  document.getElementById('pe-precio').textContent = fmtEur(Math.round(Math.max(0, precioMax)));
+  document.getElementById('pe-precio-sub').textContent = precioMax < r.totalCompra
+    ? `Pagarías ${fmtEur(Math.round(r.totalCompra - precioMax))} de más`
+    : `Tienes margen de ${fmtEur(Math.round(precioMax - r.totalCompra))}`;
+  document.getElementById('pe-gastos').textContent = fmtEur(Math.round(Math.max(0, gastosMax)));
+
+  const margen = r.rentNeta / 0.05;
+  const margenPct = Math.min(margen * 100, 100);
+  document.getElementById('pe-margen').textContent = fmtPct(r.rentNeta) + ' / 5% objetivo';
+  document.getElementById('pe-margen').className = '';
+  document.getElementById('pe-margen').style.color = r.rentNeta >= 0.05 ? 'var(--accent2)' : 'var(--danger)';
+  document.getElementById('pb-margen').style.width = Math.max(0, margenPct) + '%';
+  document.getElementById('pb-margen').style.background = r.rentNeta >= 0.05 ? 'var(--accent2)' : 'var(--danger)';
+}
+
+// ═══════════════════════════════════════════
+// SIMULADOR
+// ═══════════════════════════════════════════
+function initSimulador() {
+  if (!resultado) { calcularYMostrar(); return; }
+  const r = resultado;
+  document.getElementById('s-alquiler').value = r.alquilerMensual;
+  document.getElementById('s-precio').value = r.precio;
+  document.getElementById('s-financiado').value = usaHipoteca ? parseFloat(v('pct-financiado')) : 0;
+  document.getElementById('s-tin').value = v('tin');
+  document.getElementById('s-gastos').value = r.gastosOp;
+  simular();
+}
+
+function simular() {
+  const alq = parseFloat(document.getElementById('s-alquiler').value);
+  const precio = parseFloat(document.getElementById('s-precio').value);
+  const pctFin = parseFloat(document.getElementById('s-financiado').value) / 100;
+  const tin = parseFloat(document.getElementById('s-tin').value);
+  const gastos = parseFloat(document.getElementById('s-gastos').value);
+  const plazo = parseFloat(v('plazo')) || 25;
+
+  document.getElementById('sv-alquiler').textContent = fmtEur(alq);
+  document.getElementById('sv-precio').textContent = fmtEur(precio);
+  document.getElementById('sv-financiado').textContent = (pctFin * 100).toFixed(0) + '%';
+  document.getElementById('sv-tin').textContent = tin.toFixed(1) + '%';
+  document.getElementById('sv-gastos').textContent = fmtEur(gastos);
+
+  // Estimar total compra
+  const itp = precio * (parseFloat(v('itp-display')) / 100 || 0.08);
+  const totalC = precio + itp + parseFloat(v('notaria')) + parseFloat(v('reforma')) + parseFloat(v('comision'));
+  const hipCap = precio * pctFin;
+  const capPropio = Math.max(0, totalC - hipCap);
+  const hip = calcularHipoteca(hipCap, tin, plazo);
+
+  const alqAnual = alq * 12;
+  const ingresoNeto = alqAnual - gastos;
+  const rentNeta = totalC > 0 ? ingresoNeto / totalC : 0;
+  const cf = alq - hip.cuota - gastos / 12;
+  const coc = capPropio > 0 ? (cf * 12) / capPropio : 0;
+
+  const n = (v) => isFinite(v) ? v : 0;
+  document.getElementById('sim-neta').textContent = fmtPct(n(rentNeta));
+  document.getElementById('sim-neta').style.color = rentNeta >= 0.05 ? 'var(--accent2)' : rentNeta >= 0.03 ? 'var(--warn)' : 'var(--danger)';
+  document.getElementById('sim-cf').textContent = fmtEurDec(n(cf));
+  document.getElementById('sim-cf').style.color = cf > 0 ? 'var(--accent2)' : 'var(--danger)';
+  document.getElementById('sim-coc').textContent = fmtPct(n(coc));
+  document.getElementById('sim-coc').style.color = coc >= 0.05 ? 'var(--accent2)' : coc >= 0 ? 'var(--warn)' : 'var(--danger)';
+
+  const sv = document.getElementById('sim-verdict');
+  if (rentNeta >= 0.05) {
+    sv.style.background = 'rgba(58,240,196,0.1)';
+    sv.style.color = 'var(--accent2)';
+    sv.textContent = '✅ RENTABLE con estos parámetros';
+  } else if (rentNeta >= 0.03) {
+    sv.style.background = 'rgba(255,184,48,0.1)';
+    sv.style.color = 'var(--warn)';
+    sv.textContent = '⚠️ En el límite — ajusta parámetros';
+  } else {
+    sv.style.background = 'rgba(255,77,109,0.1)';
+    sv.style.color = 'var(--danger)';
+    sv.textContent = '🚫 No rentable — necesita mejoras significativas';
+  }
+
+  // Punto de equilibrio
+  renderPuntoEquilibrio(resultado);
+}
+
+// ═══════════════════════════════════════════
+// GUARDAR OPERACIONES
+// ═══════════════════════════════════════════
+function guardarOperacion() {
+  calcularYMostrar();
+  openModal('modal-nueva-op');
+  const dir = v('direccion');
+  document.getElementById('modal-nombre').value = dir || '';
+  setTimeout(() => document.getElementById('modal-nombre').focus(), 100);
+}
+
+function confirmarGuardar() {
+  const nombre = document.getElementById('modal-nombre').value.trim() || 'Sin nombre';
+  if (!resultado) { calcularYMostrar(); }
+  const op = {
+    id: Date.now(),
+    nombre,
+    fecha: new Date().toLocaleDateString('es-ES'),
+    comunidad: v('comunidad'),
+    ...resultado
+  };
+  operaciones.push(op);
+  localStorage.setItem('investcheck-ops', JSON.stringify(operaciones));
+  closeModal('modal-nueva-op');
+  renderOperaciones();
+  renderComparar();
+}
+
+// ═══════════════════════════════════════════
+// OPERACIONES
+// ═══════════════════════════════════════════
+function renderOperaciones() {
+  const list = document.getElementById('op-list');
+  if (operaciones.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🏠</div><p>No hay operaciones guardadas.<br>Calcula una propiedad y pulsa <strong>Guardar actual</strong>.</p></div>`;
+    return;
+  }
+  list.innerHTML = operaciones.map(op => {
+    const clase = op.rentNeta >= 0.05 ? 'good' : op.rentNeta >= 0.03 ? 'warn' : 'bad';
+    const emoji = op.rentNeta >= 0.05 ? '✅' : op.rentNeta >= 0.03 ? '⚠️' : '🚫';
+    const cfColor = op.cashflowMensual >= 0 ? 'var(--accent2)' : 'var(--danger)';
+    return `<div class="op-item">
+      <div class="op-badge">${emoji}</div>
+      <div class="op-info">
+        <div class="op-name">${op.nombre}</div>
+        <div class="op-meta">${op.comunidad || ''} · ${op.fecha} · ${fmtEur(op.precio)}</div>
+      </div>
+      <div class="op-metrics">
+        <div class="op-metric-item">
+          <div class="oml">Rent. neta</div>
+          <div class="omv" style="color:${op.rentNeta >= 0.05 ? 'var(--accent2)' : op.rentNeta >= 0.03 ? 'var(--warn)' : 'var(--danger)'}">${fmtPct(op.rentNeta)}</div>
+        </div>
+        <div class="op-metric-item">
+          <div class="oml">Cash-Flow</div>
+          <div class="omv" style="color:${cfColor}">${fmtEurDec(op.cashflowMensual)}</div>
+        </div>
+        <div class="op-metric-item">
+          <div class="oml">Cash on Cash</div>
+          <div class="omv">${fmtPct(op.cashOnCash)}</div>
+        </div>
+      </div>
+      <div class="op-actions">
+        <button class="btn btn-secondary btn-sm btn-icon" title="Cargar" onclick="cargarOperacion(${op.id})">📂</button>
+        <button class="btn btn-danger btn-sm btn-icon" title="Eliminar" onclick="eliminarOperacion(${op.id})">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function eliminarOperacion(id) {
+  if (!confirm('¿Eliminar esta operación?')) return;
+  operaciones = operaciones.filter(o => o.id !== id);
+  localStorage.setItem('investcheck-ops', JSON.stringify(operaciones));
+  renderOperaciones();
+  renderComparar();
+}
+
+function cargarOperacion(id) {
+  const op = operaciones.find(o => o.id === id);
+  if (!op) return;
+  // Cargar en el formulario
+  document.getElementById('direccion').value = op.nombre;
+  document.getElementById('precio').value = op.precio;
+  document.getElementById('alquiler').value = op.alquilerMensual;
+  document.getElementById('ibi').value = op.ibi;
+  document.getElementById('seguros').value = op.seguros;
+  document.getElementById('comunidad-gastos').value = op.comunidadG;
+  document.getElementById('mantenimiento').value = op.mant;
+  document.getElementById('reforma').value = op.reforma;
+  document.getElementById('comision').value = op.comision;
+  document.getElementById('mobiliario').value = op.mobiliario;
+  document.getElementById('contingencias').value = op.contingencias;
+  calcularYMostrar();
+  switchTab('calculadora', document.querySelector('.tab-btn'));
+}
+
+// ═══════════════════════════════════════════
+// COMPARAR
+// ═══════════════════════════════════════════
+function renderComparar() {
+  const cc = document.getElementById('compare-content');
+  if (operaciones.length < 2) {
+    cc.innerHTML = `<div class="empty-state"><div class="empty-icon">⚖️</div><p>Guarda al menos 2 operaciones para poder compararlas.</p></div>`;
+    return;
+  }
+  const cols = operaciones.map(op => `<th style="padding:12px 16px; font-weight:600;">${op.nombre}<br><span style="font-weight:400;color:var(--muted);font-size:11px;">${op.fecha}</span></th>`).join('');
+  const rows = [
+    ['Precio de compra', op => fmtEur(op.precio)],
+    ['Total inversión', op => fmtEur(op.totalCompra)],
+    ['Capital propio', op => fmtEur(op.capitalPropio)],
+    ['Alquiler mensual', op => fmtEurDec(op.alquilerMensual)],
+    ['Cuota hipoteca', op => fmtEurDec(op.cuotaHip)],
+    ['Cash-Flow mensual', op => fmtEurDec(op.cashflowMensual)],
+    ['Rent. bruta', op => fmtPct(op.rentBruta)],
+    ['Rent. neta', op => fmtPct(op.rentNeta)],
+    ['Cash on Cash', op => fmtPct(op.cashOnCash)],
+    ['ROCE', op => fmtPct(op.roce)],
+    ['Rent. total', op => fmtPct(op.rentTotal)],
+    ['PER', op => op.per.toFixed(1) + ' años'],
+    ['Hipoteca/alquiler', op => fmtPct(op.ratioHipAlquiler)],
+    ['Veredicto', op => op.rentNeta >= 0.05 ? '✅ Rentable' : op.rentNeta >= 0.03 ? '⚠️ Límite' : '🚫 No rentable'],
+  ];
+
+  const trRows = rows.map(([label, fn]) => {
+    const tds = operaciones.map(op => {
+      let extra = '';
+      if (label === 'Rent. neta') extra = `style="color:${op.rentNeta >= 0.05 ? 'var(--accent2)' : op.rentNeta >= 0.03 ? 'var(--warn)' : 'var(--danger)'}; font-weight:700;"`;
+      if (label === 'Cash-Flow mensual') extra = `style="color:${op.cashflowMensual >= 0 ? 'var(--accent2)' : 'var(--danger)'};"`;
+      return `<td class="mono" ${extra}>${fn(op)}</td>`;
+    }).join('');
+    return `<tr><td style="font-weight:600;font-size:13px;">${label}</td>${tds}</tr>`;
+  }).join('');
+
+  cc.innerHTML = `<div style="overflow-x:auto;"><table class="compare-table">
+    <thead><tr><th>Métrica</th>${cols}</tr></thead>
+    <tbody>${trRows}</tbody>
+  </table></div>`;
+}
+
+// ═══════════════════════════════════════════
+// EXPORTAR CSV
+// ═══════════════════════════════════════════
+function exportarCSV() {
+  if (operaciones.length === 0) { alert('No hay operaciones guardadas.'); return; }
+  const campos = ['nombre','fecha','precio','totalCompra','capitalPropio','alquilerMensual','cuotaHip','cashflowMensual','rentBruta','rentNeta','cashOnCash','roce','rentTotal','per','ratioHipAlquiler'];
+  const headers = ['Nombre','Fecha','Precio','Total Inversión','Capital Propio','Alquiler Mensual','Cuota Hipoteca','Cash-Flow Mensual','Rent. Bruta','Rent. Neta','Cash on Cash','ROCE','Rent. Total','PER','Ratio Hip/Alq'];
+  const rows = operaciones.map(op => campos.map(c => {
+    const val = op[c];
+    if (typeof val === 'number') return val.toFixed(4);
+    return `"${val}"`;
+  }).join(';'));
+  const csv = [headers.join(';'), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'investcheck-operaciones.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ═══════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// Cerrar modal al click fuera
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
+});
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  actualizarITP();
+  calcularYMostrar();
+  renderOperaciones();
+});
+</script>
+
 </body>
 </html>
