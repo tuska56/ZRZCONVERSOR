@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>InvestCheck — Rentabilidad de Alquiler</title>
-<link href="[https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap](https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap)" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
   --ink:      #1a1c23;
@@ -27,56 +27,208 @@
   --r: 10px;
   --r-sm: 6px;
   --sh: 0 1px 3px rgba(26,28,35,.07), 0 4px 16px rgba(26,28,35,.05);
-  --sh-md: 0 4px 12px rgba(26,28,35,.1), 0 12px 40px rgba(26,28,35,.07);
 }
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;font-size:14px;line-height:1.6;min-height:100vh}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
 
 /* HEADER */
-header{background:var(--white);border-bottom:1.5px solid var(--line);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 1px 8px rgba(26,28,35,.06)}
-.logo{display:flex;align-items:center;gap:10px;font-family:'Playfair Display',serif;font-size:20px;color:var(--ink)}
-.logo-mark{width:30px;height:30px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;font-family:'IBM Plex Mono',monospace}
-.logo-sub{font-size:11px;color:var(--ink3);font-family:'IBM Plex Sans',sans-serif;font-weight:400;display:block}
+header {
+  background: var(--white);
+  border-bottom: 1.5px solid var(--line);
+  padding: 0 28px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: 0 1px 8px rgba(26,28,35,.06);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  color: var(--ink);
+}
+
+.logo-mark {
+  width: 30px;
+  height: 30px;
+  background: var(--green);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.logo-sub {
+  font-size: 11px;
+  color: var(--ink3);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 400;
+  display: block;
+  margin-top: -2px;
+}
 
 /* TAB BAR */
-.tab-bar{background:var(--white);border-bottom:1.5px solid var(--line);padding:0 28px;display:flex;overflow-x:auto}
-.tab-btn{padding:13px 18px;border:none;background:transparent;color:var(--ink3);font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:6px}
-.tab-btn.active{color:var(--green);border-bottom-color:var(--green);font-weight:600}
-.tab-content{display:none}.tab-content.active{display:block;animation:fadeUp .2s ease}
-@keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.tab-bar {
+  background: var(--white);
+  border-bottom: 1.5px solid var(--line);
+  padding: 0 28px;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+}
 
-/* LAYOUT & CARDS */
-.wrap{max-width:1380px;margin:0 auto;padding:26px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-@media(max-width:860px){.g2{grid-template-columns:1fr}}
-.card{background:var(--white);border:1.5px solid var(--line);border-radius:var(--r);padding:20px 22px;box-shadow:var(--sh);margin-bottom:16px}
-.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--paper2)}
-.card-title{font-family:'Playfair Display',serif;font-size:15px;color:var(--ink);display:flex;align-items:center;gap:7px}
+.tab-btn {
+  padding: 13px 18px;
+  border: none;
+  background: transparent;
+  color: var(--ink3);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2.5px solid transparent;
+  white-space: nowrap;
+  transition: all .15s;
+}
 
-/* FORM FIELDS */
-.field{margin-bottom:12px}
-.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-label.lbl{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--ink3);margin-bottom:4px}
-input[type=text],input[type=number],select{width:100%;padding:8px 11px;background:var(--paper);border:1.5px solid var(--line);border-radius:var(--r-sm);color:var(--ink);font-family:'IBM Plex Mono',monospace;font-size:13px;outline:none}
-input:focus,select:focus{border-color:var(--green);background:var(--white);box-shadow:0 0 0 3px rgba(26,122,74,.1)}
+.tab-btn.active {
+  color: var(--green);
+  border-bottom-color: var(--green);
+  font-weight: 600;
+}
 
-/* SUMMARY ROWS */
-.srow{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--paper);border-radius:var(--r-sm);border:1.5px solid var(--line);margin-top:12px}
-.srow.grn{background:var(--green-bg);border-color:#b6e0ca;color:var(--green)}
-.sv{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600}
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeUp .2s ease; }
 
-/* BOTONES */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border-radius:var(--r-sm);border:1.5px solid transparent;font-weight:600;cursor:pointer;transition:all .15s}
-.btn-p{background:var(--green);color:#fff}.btn-p:hover{background:#155f3a}
-.btn-s{background:var(--white);color:var(--ink2);border-color:var(--line)}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-/* TOOLTIP & MISC */
-.tip{display:inline-flex;width:14px;height:14px;background:var(--paper2);border-radius:50%;align-items:center;justify-content:center;font-size:9px;cursor:help;position:relative}
-.tip:hover::after{content:attr(data-tip);position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px;border-radius:4px;width:180px;z-index:99;font-weight:400;text-transform:none}
+/* LAYOUT */
+.wrap { max-width: 1200px; margin: 0 auto; padding: 26px; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media(max-width: 860px) { .g2 { grid-template-columns: 1fr; } }
 
-/* SIMULADOR */
-.sim-res{display:grid;grid-template-columns:repeat(3,1fr);background:var(--ink);border-radius:var(--r);padding:16px;margin-top:18px;color:#fff;text-align:center}
-.sim-rv{font-family:'Playfair Display',serif;font-size:20px}
+/* CARDS */
+.card {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: var(--r);
+  padding: 20px 22px;
+  box-shadow: var(--sh);
+  margin-bottom: 20px;
+}
+
+.card-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--paper2);
+}
+
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* FIELDS */
+.field { margin-bottom: 12px; }
+.fr { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+label.lbl {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 4px;
+}
+
+input[type=number], input[type=text], select {
+  width: 100%;
+  padding: 10px;
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-sm);
+  color: var(--ink);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  outline: none;
+}
+
+input:focus { border-color: var(--green); background: #fff; }
+
+/* RESULTS */
+.srow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: var(--paper);
+  border-radius: var(--r-sm);
+  border: 1.5px solid var(--line);
+  margin-top: 10px;
+}
+
+.srow.grn { background: var(--green-bg); border-color: #b6e0ca; color: var(--green); }
+.sv { font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 600; }
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.metric-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: var(--r);
+  border: 1.5px solid var(--line);
+  text-align: center;
+}
+
+.metric-val { font-size: 24px; font-family: 'Playfair Display', serif; display: block; margin: 5px 0; }
+.metric-lbl { font-size: 10px; text-transform: uppercase; color: var(--ink3); letter-spacing: 1px; }
+
+/* BUTTONS */
+.btn {
+  padding: 10px 20px;
+  border-radius: var(--r-sm);
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: 0.2s;
+}
+
+.btn-p { background: var(--green); color: #fff; }
+.btn-p:hover { background: #145d38; }
+
 </style>
 </head>
 <body>
@@ -86,78 +238,70 @@ input:focus,select:focus{border-color:var(--green);background:var(--white);box-s
     <div class="logo-mark">IC</div>
     <div>InvestCheck<span class="logo-sub">Calculadora de Rentabilidad</span></div>
   </div>
-  <div class="hdr-right">
-    <button class="btn btn-s" onclick="location.reload()">🔄 Limpiar</button>
-    <button class="btn btn-p" onclick="swTab('anal', document.querySelector('.tab-btn:nth-child(2)'))">▶ Calcular</button>
-  </div>
+  <button class="btn btn-p" onclick="swTab('anal', document.querySelectorAll('.tab-btn')[1])">📊 Ver Análisis</button>
 </header>
 
 <div class="tab-bar">
-  <button class="tab-btn active" onclick="swTab('calc',this)">🏠 Datos</button>
+  <button class="tab-btn active" onclick="swTab('calc',this)">🏠 Datos Entrada</button>
   <button class="tab-btn" onclick="swTab('anal',this)">📊 Análisis</button>
-  <button class="tab-btn" onclick="swTab('sim',this)">🎛️ Simulador</button>
 </div>
 
 <div id="tab-calc" class="tab-content active">
   <div class="wrap">
     <div class="g2">
-      <div class="col">
+      <div>
         <div class="card">
-          <div class="card-hdr"><div class="card-title">🏷️ Coste Adquisición</div></div>
+          <div class="card-hdr"><div class="card-title">📍 Adquisición</div></div>
           <div class="field">
-            <label class="lbl">Precio de compra</label>
-            <input type="number" id="precio" value="165000" oninput="recalc()">
+            <label class="lbl">Precio de Compra (€)</label>
+            <input type="number" id="precio" value="150000" oninput="recalc()">
           </div>
           <div class="fr">
             <div class="field">
-              <label class="lbl">ITP (%)</label>
+              <label class="lbl">ITP / Impuestos (%)</label>
               <input type="number" id="itp-pct" value="8" oninput="recalc()">
             </div>
             <div class="field">
-              <label class="lbl">Reforma</label>
-              <input type="number" id="reforma" value="8000" oninput="recalc()">
+              <label class="lbl">Reforma (€)</label>
+              <input type="number" id="reforma" value="10000" oninput="recalc()">
             </div>
           </div>
           <div class="srow grn">
-            <span>Inversión Total</span>
+            <span>Inversión Total:</span>
             <span class="sv" id="tot-inv">0 €</span>
           </div>
         </div>
 
         <div class="card">
-          <div class="card-hdr"><div class="card-title">🏦 Hipoteca</div></div>
+          <div class="card-hdr"><div class="card-title">🏦 Financiación</div></div>
           <div class="fr">
             <div class="field">
-              <label class="lbl">% Financiación</label>
-              <input type="number" id="pct-fin" value="70" oninput="recalc()">
+              <label class="lbl">% Hipoteca</label>
+              <input type="number" id="pct-hip" value="80" oninput="recalc()">
             </div>
             <div class="field">
-              <label class="lbl">Interés (TIN %)</label>
-              <input type="number" id="tin" value="3.0" step="0.1" oninput="recalc()">
+              <label class="lbl">Interés TIN (%)</label>
+              <input type="number" id="tin" value="3.5" step="0.1" oninput="recalc()">
             </div>
           </div>
         </div>
       </div>
 
-      <div class="col">
+      <div>
         <div class="card">
-          <div class="card-hdr"><div class="card-title">💰 Ingresos Mensuales</div></div>
+          <div class="card-hdr"><div class="card-title">💰 Explotación</div></div>
           <div class="field">
-            <label class="lbl">Alquiler mensual</label>
-            <input type="number" id="alquiler" value="850" oninput="recalc()">
+            <label class="lbl">Alquiler Mensual (€)</label>
+            <input type="number" id="alquiler" value="800" oninput="recalc()">
           </div>
-        </div>
-
-        <div class="card">
-          <div class="card-hdr"><div class="card-title">📉 Gastos Anuales</div></div>
           <div class="fr">
             <div class="field">
-              <label class="lbl">IBI</label>
-              <input type="number" id="ibi" value="400" oninput="recalc()">
+              <label class="lbl">IBI (anual)</label>
+              <input type="number" id="ibi" value="350" oninput="recalc()">
             </div>
             <div class="field">
-              <label class="lbl">Comunidad</label>
-              <input type="number" id="comunidad" value="600" oninput="recalc()">
+              <label class="lbl">Comunidad (mensual)</label>
+              <input type="number" id="comunidad" value="50" oninput="recalc()">
             </div>
           </div>
         </div>
@@ -168,12 +312,22 @@ input:focus,select:focus{border-color:var(--green);background:var(--white);box-s
 
 <div id="tab-anal" class="tab-content">
   <div class="wrap">
-    <div class="card">
-      <div class="card-title">Resultados del Análisis</div>
-      <div class="sim-res">
-        <div><div>Rent. Neta</div><div class="sim-rv" id="res-neta">-</div></div>
-        <div><div>Cash Flow/mes</div><div class="sim-rv" id="res-cf">-</div></div>
-        <div><div>PER (años)</div><div class="sim-rv" id="res-per">-</div></div>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <span class="metric-lbl">Rentabilidad Bruta</span>
+        <span class="metric-val" id="res-bruta">0%</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-lbl">Rentabilidad Neta</span>
+        <span class="metric-val" id="res-neta" style="color: var(--green);">0%</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-lbl">Cash Flow Mensual</span>
+        <span class="metric-val" id="res-cf">0 €</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-lbl">PER (Años)</span>
+        <span class="metric-val" id="res-per">0</span>
       </div>
     </div>
   </div>
@@ -189,31 +343,45 @@ function swTab(id, btn) {
 }
 
 function recalc() {
+  // Entradas
   const precio = parseFloat(document.getElementById('precio').value) || 0;
-  const itp = (parseFloat(document.getElementById('itp-pct').value) || 0) / 100;
+  const itpPct = (parseFloat(document.getElementById('itp-pct').value) || 0) / 100;
   const reforma = parseFloat(document.getElementById('reforma').value) || 0;
   const alquiler = parseFloat(document.getElementById('alquiler').value) || 0;
   const ibi = parseFloat(document.getElementById('ibi').value) || 0;
   const comunidad = parseFloat(document.getElementById('comunidad').value) || 0;
-  
-  const totalInv = precio + (precio * itp) + reforma;
-  document.getElementById('tot-inv').innerText = totalInv.toLocaleString() + " €";
+  const pctHip = (parseFloat(document.getElementById('pct-hip').value) || 0) / 100;
+  const tin = (parseFloat(document.getElementById('tin').value) || 0) / 100;
 
-  // Cálculos básicos de rentabilidad
+  // Cálculos de Inversión
+  const gastosCompra = precio * itpPct;
+  const inversionTotal = precio + gastosCompra + reforma;
+  document.getElementById('tot-inv').innerText = Math.round(inversionTotal).toLocaleString() + " €";
+
+  // Hipoteca (Simplificada para el ejemplo)
+  const capitalHipotecado = precio * pctHip;
+  const cuotaMensualHip = (capitalHipotecado * (tin / 12)) / (1 - Math.pow(1 + (tin / 12), -300)); // 25 años fijo
+
+  // Rentabilidades
   const ingresosAnuales = alquiler * 12;
-  const gastosAnuales = ibi + comunidad;
-  const beneficioNeto = ingresosAnuales - gastosAnuales;
-  
-  const rentNeta = (beneficioNeto / totalInv) * 100;
-  const cashFlow = beneficioNeto / 12;
-  const per = totalInv / beneficioNeto;
+  const gastosAnuales = ibi + (comunidad * 12);
+  const beneficioNetoAnual = ingresosAnuales - gastosAnuales;
 
-  document.getElementById('res-neta').innerText = rentNeta.toFixed(2) + " %";
-  document.getElementById('res-cf').innerText = Math.round(cashFlow) + " €";
+  const rentBruta = (ingresosAnuales / inversionTotal) * 100;
+  const rentNeta = (beneficioNetoAnual / inversionTotal) * 100;
+  const cashFlowMensual = (beneficioNetoAnual / 12) - (pctHip > 0 ? cuotaMensualHip : 0);
+  const per = inversionTotal / beneficioNetoAnual;
+
+  // Mostrar resultados
+  document.getElementById('res-bruta').innerText = rentBruta.toFixed(2) + "%";
+  document.getElementById('res-neta').innerText = rentNeta.toFixed(2) + "%";
+  document.getElementById('res-cf').innerText = Math.round(cashFlowMensual) + " €";
   document.getElementById('res-per').innerText = per.toFixed(1);
 }
 
+// Inicializar al cargar
 window.onload = recalc;
 </script>
+
 </body>
 </html>
