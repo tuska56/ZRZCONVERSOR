@@ -1,388 +1,315 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>InvestCheck — Rentabilidad de Alquiler</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root {
-  --ink:      #1a1c23;
-  --ink2:     #3d4054;
-  --ink3:     #7a7f96;
-  --paper:    #f5f4f0;
-  --paper2:   #eceae4;
-  --paper3:   #e2e0d8;
-  --white:    #ffffff;
-  --line:     #d8d6ce;
-  --green:    #1a7a4a;
-  --green-bg: #e8f5ee;
-  --green-m:  #2eab68;
-  --amber:    #b45309;
-  --amber-bg: #fef3e2;
-  --red:      #b91c1c;
-  --red-bg:   #fef2f2;
-  --blue:     #1d4ed8;
-  --blue-bg:  #eff6ff;
-  --r: 10px;
-  --r-sm: 6px;
-  --sh: 0 1px 3px rgba(26,28,35,.07), 0 4px 16px rgba(26,28,35,.05);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InvestCheck Pro — Analizador Inmobiliario Completo</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    <style>
+        :root {
+            --ink: #1a1c23;
+            --ink2: #3d4054;
+            --ink3: #7a7f96;
+            --paper: #f5f4f0;
+            --paper2: #eceae4;
+            --white: #ffffff;
+            --line: #d8d6ce;
+            --green: #1a7a4a;
+            --green-bg: #e8f5ee;
+            --red: #b91c1c;
+            --red-bg: #fef2f2;
+            --blue: #1d4ed8;
+            --r: 12px;
+            --r-sm: 8px;
+            --sh: 0 4px 20px rgba(26,28,35,.08);
+        }
 
-body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 14px;
-  line-height: 1.6;
-  min-height: 100vh;
-}
+        /* Reset y Base */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background: var(--paper); 
+            color: var(--ink); 
+            font-family: 'IBM Plex Sans', sans-serif; 
+            font-size: 14px; 
+            line-height: 1.6;
+            min-height: 100vh;
+        }
 
-/* HEADER */
-header {
-  background: var(--white);
-  border-bottom: 1.5px solid var(--line);
-  padding: 0 28px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 200;
-  box-shadow: 0 1px 8px rgba(26,28,35,.06);
-}
+        /* Estructura Header */
+        header { 
+            background: var(--white); 
+            border-bottom: 1.5px solid var(--line); 
+            padding: 0 30px; 
+            height: 70px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+        .logo-mark { width: 35px; height: 35px; background: var(--green); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-family: 'IBM Plex Mono', monospace; }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: 'Playfair Display', serif;
-  font-size: 20px;
-  color: var(--ink);
-}
+        /* Navegación por Pestañas */
+        .tab-bar { 
+            background: var(--white); 
+            border-bottom: 1.5px solid var(--line); 
+            display: flex; 
+            justify-content: center;
+            gap: 10px;
+            position: sticky;
+            top: 70px;
+            z-index: 999;
+        }
+        .tab-btn { 
+            padding: 15px 25px; 
+            border: none; 
+            background: transparent; 
+            color: var(--ink3); 
+            font-weight: 600; 
+            cursor: pointer; 
+            border-bottom: 3px solid transparent;
+            transition: 0.3s;
+        }
+        .tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
 
-.logo-mark {
-  width: 30px;
-  height: 30px;
-  background: var(--green);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 700;
-  font-family: 'IBM Plex Mono', monospace;
-}
+        /* Contenedores */
+        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
+        .tab-content.active { display: block; }
 
-.logo-sub {
-  font-size: 11px;
-  color: var(--ink3);
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 400;
-  display: block;
-  margin-top: -2px;
-}
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* TAB BAR */
-.tab-bar {
-  background: var(--white);
-  border-bottom: 1.5px solid var(--line);
-  padding: 0 28px;
-  display: flex;
-  gap: 0;
-  overflow-x: auto;
-}
+        /* Cards y Formulario */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .card { background: var(--white); padding: 25px; border-radius: var(--r); border: 1.5px solid var(--line); box-shadow: var(--sh); }
+        .card-h3 { font-family: 'Playfair Display', serif; margin-bottom: 20px; font-size: 18px; border-bottom: 1px solid var(--paper2); padding-bottom: 10px; }
 
-.tab-btn {
-  padding: 13px 18px;
-  border: none;
-  background: transparent;
-  color: var(--ink3);
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  border-bottom: 2.5px solid transparent;
-  white-space: nowrap;
-  transition: all .15s;
-}
+        .field { margin-bottom: 15px; }
+        .field label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px; }
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: var(--r-sm); 
+            border: 1.5px solid var(--line); 
+            background: var(--paper); 
+            font-family: 'IBM Plex Mono', monospace;
+            outline: none;
+        }
+        input:focus { border-color: var(--green); background: #fff; }
 
-.tab-btn.active {
-  color: var(--green);
-  border-bottom-color: var(--green);
-  font-weight: 600;
-}
-
-.tab-content { display: none; }
-.tab-content.active { display: block; animation: fadeUp .2s ease; }
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* LAYOUT */
-.wrap { max-width: 1200px; margin: 0 auto; padding: 26px; }
-.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-@media(max-width: 860px) { .g2 { grid-template-columns: 1fr; } }
-
-/* CARDS */
-.card {
-  background: var(--white);
-  border: 1.5px solid var(--line);
-  border-radius: var(--r);
-  padding: 20px 22px;
-  box-shadow: var(--sh);
-  margin-bottom: 20px;
-}
-
-.card-hdr {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--paper2);
-}
-
-.card-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 16px;
-  color: var(--ink);
-  font-weight: 600;
-}
-
-/* FIELDS */
-.field { margin-bottom: 12px; }
-.fr { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-label.lbl {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: var(--ink3);
-  margin-bottom: 4px;
-}
-
-input[type=number], input[type=text], select {
-  width: 100%;
-  padding: 10px;
-  background: var(--paper);
-  border: 1.5px solid var(--line);
-  border-radius: var(--r-sm);
-  color: var(--ink);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 13px;
-  outline: none;
-}
-
-input:focus { border-color: var(--green); background: #fff; }
-
-/* RESULTS */
-.srow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  background: var(--paper);
-  border-radius: var(--r-sm);
-  border: 1.5px solid var(--line);
-  margin-top: 10px;
-}
-
-.srow.grn { background: var(--green-bg); border-color: #b6e0ca; color: var(--green); }
-.sv { font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 600; }
-
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  margin-top: 20px;
-}
-
-.metric-card {
-  background: #fff;
-  padding: 20px;
-  border-radius: var(--r);
-  border: 1.5px solid var(--line);
-  text-align: center;
-}
-
-.metric-val { font-size: 24px; font-family: 'Playfair Display', serif; display: block; margin: 5px 0; }
-.metric-lbl { font-size: 10px; text-transform: uppercase; color: var(--ink3); letter-spacing: 1px; }
-
-/* BUTTONS */
-.btn {
-  padding: 10px 20px;
-  border-radius: var(--r-sm);
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-  transition: 0.2s;
-}
-
-.btn-p { background: var(--green); color: #fff; }
-.btn-p:hover { background: #145d38; }
-
-</style>
+        /* Métricas de Resultado */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .m-card { background: var(--white); padding: 25px; border-radius: var(--r); border: 1.5px solid var(--line); text-align: center; }
+        .m-val { display: block; font-size: 28px; font-family: 'Playfair Display', serif; font-weight: 700; margin: 10px 0; }
+        .m-lbl { font-size: 11px; text-transform: uppercase; color: var(--ink3); letter-spacing: 1px; }
+        
+        .footer-info { text-align: center; margin-top: 40px; color: var(--ink3); font-size: 12px; }
+    </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">
-    <div class="logo-mark">IC</div>
-    <div>InvestCheck<span class="logo-sub">Calculadora de Rentabilidad</span></div>
-  </div>
-  <button class="btn btn-p" onclick="swTab('anal', document.querySelectorAll('.tab-btn')[1])">📊 Ver Análisis</button>
+    <div class="logo"><div class="logo-mark">IP</div> InvestCheck Pro</div>
 </header>
 
 <div class="tab-bar">
-  <button class="tab-btn active" onclick="swTab('calc',this)">🏠 Datos Entrada</button>
-  <button class="tab-btn" onclick="swTab('anal',this)">📊 Análisis</button>
+    <button class="tab-btn active" onclick="openTab(event, 'tab-datos')">1. DATOS DE ENTRADA</button>
+    <button class="tab-btn" onclick="openTab(event, 'tab-analisis')">2. ANÁLISIS DE RESULTADOS</button>
 </div>
 
-<div id="tab-calc" class="tab-content active">
-  <div class="wrap">
-    <div class="g2">
-      <div>
-        <div class="card">
-          <div class="card-hdr"><div class="card-title">📍 Adquisición</div></div>
-          <div class="field">
-            <label class="lbl">Precio de Compra (€)</label>
-            <input type="number" id="precio" value="150000" oninput="recalc()">
-          </div>
-          <div class="fr">
-            <div class="field">
-              <label class="lbl">ITP / Impuestos (%)</label>
-              <input type="number" id="itp-pct" value="8" oninput="recalc()">
+<div class="container">
+    
+    <div id="tab-datos" class="tab-content active">
+        <div class="grid">
+            <div class="card">
+                <h3 class="card-h3">Inversión Inicial</h3>
+                <div class="field">
+                    <label>Precio de Adquisición (€)</label>
+                    <input type="number" id="p_compra" value="150000" oninput="calcular()">
+                </div>
+                <div class="field">
+                    <label>Gastos (ITP, Notaría, Registro %)</label>
+                    <input type="number" id="p_gastos" value="10" oninput="calcular()">
+                </div>
+                <div class="field">
+                    <label>Reforma y Mobiliario (€)</label>
+                    <input type="number" id="v_reforma" value="15000" oninput="calcular()">
+                </div>
             </div>
-            <div class="field">
-              <label class="lbl">Reforma (€)</label>
-              <input type="number" id="reforma" value="10000" oninput="recalc()">
-            </div>
-          </div>
-          <div class="srow grn">
-            <span>Inversión Total:</span>
-            <span class="sv" id="tot-inv">0 €</span>
-          </div>
-        </div>
 
-        <div class="card">
-          <div class="card-hdr"><div class="card-title">🏦 Financiación</div></div>
-          <div class="fr">
-            <div class="field">
-              <label class="lbl">% Hipoteca</label>
-              <input type="number" id="pct-hip" value="80" oninput="recalc()">
+            <div class="card">
+                <h3 class="card-h3">Financiación</h3>
+                <div class="field">
+                    <label>% Financiación (Hipoteca)</label>
+                    <input type="number" id="p_hipoteca" value="80" oninput="calcular()">
+                </div>
+                <div class="field">
+                    <label>Interés Anual (TIN %)</label>
+                    <input type="number" id="p_interes" value="3.5" step="0.1" oninput="calcular()">
+                </div>
+                <div class="field">
+                    <label>Plazo (Años)</label>
+                    <input type="number" id="v_plazo" value="25" oninput="calcular()">
+                </div>
             </div>
-            <div class="field">
-              <label class="lbl">Interés TIN (%)</label>
-              <input type="number" id="tin" value="3.5" step="0.1" oninput="recalc()">
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div>
-        <div class="card">
-          <div class="card-hdr"><div class="card-title">💰 Explotación</div></div>
-          <div class="field">
-            <label class="lbl">Alquiler Mensual (€)</label>
-            <input type="number" id="alquiler" value="800" oninput="recalc()">
-          </div>
-          <div class="fr">
-            <div class="field">
-              <label class="lbl">IBI (anual)</label>
-              <input type="number" id="ibi" value="350" oninput="recalc()">
+            <div class="card">
+                <h3 class="card-h3">Ingresos y Gastos</h3>
+                <div class="field">
+                    <label>Alquiler Mensual Bruto (€)</label>
+                    <input type="number" id="v_alquiler" value="850" oninput="calcular()">
+                </div>
+                <div class="field">
+                    <label>Gastos Fijos (IBI, Seguros, Comunidad / mes)</label>
+                    <input type="number" id="v_gastos_mes" value="120" oninput="calcular()">
+                </div>
+                <div class="field">
+                    <label>Meses de Vacancia (estimado/año)</label>
+                    <input type="number" id="v_vacancia" value="0.5" step="0.1" oninput="calcular()">
+                </div>
             </div>
-            <div class="field">
-              <label class="lbl">Comunidad (mensual)</label>
-              <input type="number" id="comunidad" value="50" oninput="recalc()">
+
+            <div class="card">
+                <h3 class="card-h3">Fiscalidad (IRPF)</h3>
+                <div class="field">
+                    <label>Tu Tramo Marginal de IRPF (%)</label>
+                    <input type="number" id="p_irpf" value="19" oninput="calcular()">
+                </div>
+                <div class="field">
+                    <label>¿Vivienda Habitual del Inquilino?</label>
+                    <select id="v_reduccion" onchange="calcular()">
+                        <option value="0.4">Sí (Reducción 60%)</option>
+                        <option value="1">No (Local o Temporal)</option>
+                    </select>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
-</div>
 
-<div id="tab-anal" class="tab-content">
-  <div class="wrap">
-    <div class="metrics-grid">
-      <div class="metric-card">
-        <span class="metric-lbl">Rentabilidad Bruta</span>
-        <span class="metric-val" id="res-bruta">0%</span>
-      </div>
-      <div class="metric-card">
-        <span class="metric-lbl">Rentabilidad Neta</span>
-        <span class="metric-val" id="res-neta" style="color: var(--green);">0%</span>
-      </div>
-      <div class="metric-card">
-        <span class="metric-lbl">Cash Flow Mensual</span>
-        <span class="metric-val" id="res-cf">0 €</span>
-      </div>
-      <div class="metric-card">
-        <span class="metric-lbl">PER (Años)</span>
-        <span class="metric-val" id="res-per">0</span>
-      </div>
+    <div id="tab-analisis" class="tab-content">
+        <div class="metrics-grid">
+            <div class="m-card">
+                <span class="m-lbl">Inversión Real Total</span>
+                <span class="m-val" id="res_inv_total">0 €</span>
+            </div>
+            <div class="m-card">
+                <span class="m-lbl">Capital Propio Aportado</span>
+                <span class="m-val" id="res_cash_in">0 €</span>
+            </div>
+            <div class="m-card">
+                <span class="m-lbl">Rentabilidad Bruta</span>
+                <span class="m-val" id="res_bruta">0%</span>
+            </div>
+            <div class="m-card">
+                <span class="m-lbl">Rentabilidad Neta</span>
+                <span class="m-val" id="res_neta" style="color: var(--green);">0%</span>
+            </div>
+            <div class="m-card" id="card_cf">
+                <span class="m-lbl">Cash Flow Mensual Neto</span>
+                <span class="m-val" id="res_cf">0 €</span>
+            </div>
+            <div class="m-card">
+                <span class="m-lbl">ROE (Rent. sobre Capital)</span>
+                <span class="m-val" id="res_roe">0%</span>
+            </div>
+        </div>
+        <div class="footer-info">
+            * El cálculo de la hipoteca utiliza el sistema de amortización francés. La rentabilidad neta incluye gastos operativos y vacancia estimada.
+        </div>
     </div>
-  </div>
 </div>
 
 <script>
-function swTab(id, btn) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
-  btn.classList.add('active');
-  if(id === 'anal') recalc();
-}
+    // Función para cambiar de pestañas
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].classList.remove("active");
+        }
+        tablinks = document.getElementsByClassName("tab-btn");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("active");
+        }
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+        calcular();
+    }
 
-function recalc() {
-  // Entradas
-  const precio = parseFloat(document.getElementById('precio').value) || 0;
-  const itpPct = (parseFloat(document.getElementById('itp-pct').value) || 0) / 100;
-  const reforma = parseFloat(document.getElementById('reforma').value) || 0;
-  const alquiler = parseFloat(document.getElementById('alquiler').value) || 0;
-  const ibi = parseFloat(document.getElementById('ibi').value) || 0;
-  const comunidad = parseFloat(document.getElementById('comunidad').value) || 0;
-  const pctHip = (parseFloat(document.getElementById('pct-hip').value) || 0) / 100;
-  const tin = (parseFloat(document.getElementById('tin').value) || 0) / 100;
+    // Motor de cálculo
+    function calcular() {
+        // Captura de valores
+        const p_compra = parseFloat(document.getElementById('p_compra').value) || 0;
+        const p_gastos = (parseFloat(document.getElementById('p_gastos').value) || 0) / 100;
+        const v_reforma = parseFloat(document.getElementById('v_reforma').value) || 0;
+        
+        const p_hipoteca = (parseFloat(document.getElementById('p_hipoteca').value) || 0) / 100;
+        const p_interes = (parseFloat(document.getElementById('p_interes').value) || 0) / 100 / 12;
+        const v_plazo = (parseFloat(document.getElementById('v_plazo').value) || 0) * 12;
 
-  // Cálculos de Inversión
-  const gastosCompra = precio * itpPct;
-  const inversionTotal = precio + gastosCompra + reforma;
-  document.getElementById('tot-inv').innerText = Math.round(inversionTotal).toLocaleString() + " €";
+        const v_alquiler = parseFloat(document.getElementById('v_alquiler').value) || 0;
+        const v_gastos_mes = parseFloat(document.getElementById('v_gastos_mes').value) || 0;
+        const v_vacancia = parseFloat(document.getElementById('v_vacancia').value) || 0;
+        
+        const p_irpf = (parseFloat(document.getElementById('p_irpf').value) || 0) / 100;
+        const v_reduccion = parseFloat(document.getElementById('v_reduccion').value);
 
-  // Hipoteca (Simplificada para el ejemplo)
-  const capitalHipotecado = precio * pctHip;
-  const cuotaMensualHip = (capitalHipotecado * (tin / 12)) / (1 - Math.pow(1 + (tin / 12), -300)); // 25 años fijo
+        // 1. Inversión Total
+        const gastos_adq = p_compra * p_gastos;
+        const inv_total = p_compra + gastos_adq + v_reforma;
+        
+        // 2. Financiación y Cash-In
+        const m_hipoteca = p_compra * p_hipoteca;
+        const cash_in = inv_total - m_hipoteca;
+        
+        let cuota_hipo = 0;
+        if (m_hipoteca > 0 && p_interes > 0) {
+            cuota_hipo = m_hipoteca * ( (p_interes * Math.pow(1 + p_interes, v_plazo)) / (Math.pow(1 + p_interes, v_plazo) - 1) );
+        }
 
-  // Rentabilidades
-  const ingresosAnuales = alquiler * 12;
-  const gastosAnuales = ibi + (comunidad * 12);
-  const beneficioNetoAnual = ingresosAnuales - gastosAnuales;
+        // 3. Rentabilidades
+        const ingresos_anuales = v_alquiler * (12 - v_vacancia);
+        const gastos_anuales = v_gastos_mes * 12;
+        const beneficio_bruto = ingresos_anuales - gastos_anuales;
 
-  const rentBruta = (ingresosAnuales / inversionTotal) * 100;
-  const rentNeta = (beneficioNetoAnual / inversionTotal) * 100;
-  const cashFlowMensual = (beneficioNetoAnual / 12) - (pctHip > 0 ? cuotaMensualHip : 0);
-  const per = inversionTotal / beneficioNetoAnual;
+        // Impuestos (Simplificado: Base = Beneficio * coeficiente reducción)
+        const impuestos = (beneficio_bruto * v_reduccion) * p_irpf;
+        const beneficio_neto_real = beneficio_bruto - impuestos;
 
-  // Mostrar resultados
-  document.getElementById('res-bruta').innerText = rentBruta.toFixed(2) + "%";
-  document.getElementById('res-neta').innerText = rentNeta.toFixed(2) + "%";
-  document.getElementById('res-cf').innerText = Math.round(cashFlowMensual) + " €";
-  document.getElementById('res-per').innerText = per.toFixed(1);
-}
+        const rent_bruta = ((v_alquiler * 12) / inv_total) * 100;
+        const rent_neta = (beneficio_bruto / inv_total) * 100;
+        
+        // 4. Cash Flow y ROE
+        const cash_flow_anual = beneficio_neto_real - (cuota_hipo * 12);
+        const cash_flow_mensual = cash_flow_anual / 12;
+        const roe = (cash_flow_anual / cash_in) * 100;
 
-// Inicializar al cargar
-window.onload = recalc;
+        // Inyectar resultados en el DOM
+        document.getElementById('res_inv_total').innerText = Math.round(inv_total).toLocaleString() + " €";
+        document.getElementById('res_cash_in').innerText = Math.round(cash_in).toLocaleString() + " €";
+        document.getElementById('res_bruta').innerText = rent_bruta.toFixed(2) + "%";
+        document.getElementById('res_neta').innerText = rent_neta.toFixed(2) + "%";
+        document.getElementById('res_cf').innerText = Math.round(cash_flow_mensual).toLocaleString() + " €/mes";
+        document.getElementById('res_roe').innerText = roe.toFixed(2) + "%";
+
+        // Alerta visual si el cash flow es negativo
+        const cardCf = document.getElementById('card_cf');
+        if (cash_flow_mensual < 0) {
+            cardCf.style.backgroundColor = "var(--red-bg)";
+            document.getElementById('res_cf').style.color = "var(--red)";
+        } else {
+            cardCf.style.backgroundColor = "var(--white)";
+            document.getElementById('res_cf').style.color = "var(--ink)";
+        }
+    }
+
+    // Ejecución inicial
+    window.onload = calcular;
 </script>
 
 </body>
 </html>
-
