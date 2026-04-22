@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>InvestCheck — Rentabilidad de Alquiler</title>
+<title>InvestCheck - Rentabilidad de Alquiler</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -82,7 +82,7 @@ input[type=text]{font-family:‘IBM Plex Sans’,sans-serif;font-size:13px}
 input:focus,select:focus{border-color:var(–green);background:var(–white);box-shadow:0 0 0 3px rgba(26,122,74,.1)}
 input[readonly]{background:var(–paper2);color:var(–ink3);cursor:default}
 input[readonly]:focus{border-color:var(–line);box-shadow:none}
-select{background-image:url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.org/2000/svg’ width=‘10’ height=‘6’%3E%3Cpath d=‘M1 1l4 4 4-4’ stroke=’%237a7f96’ stroke-width=‘1.5’ fill=‘none’ stroke-linecap=‘round’ stroke-linejoin=‘round’/%3E%3C/svg%3E”);background-repeat:no-repeat;background-position:right 11px center;padding-right:30px;cursor:pointer}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.org/2000/svg’ width=‘10’ height=‘6’%3E%3Cpath d=‘M1 1l4 4 4-4’ stroke=’%237a7f96’ stroke-width=‘1.5’ fill=‘none’ stroke-linecap=‘round’ stroke-linejoin=‘round’/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:30px;cursor:pointer}
 
 /* RANGE SLIDER */
 .rng{display:flex;align-items:center;gap:12px;margin-top:6px}
@@ -299,25 +299,25 @@ select{background-image:url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.
         <label class="lbl">Comunidad Autónoma</label>
         <select id="comunidad" onchange="actualizarITP()">
           <option value="">Seleccionar...</option>
-          <option value="Andalucía" data-itp="0.08">Andalucía — 8%</option>
-          <option value="Aragón" data-itp="0.08">Aragón — 8%</option>
-          <option value="Asturias" data-itp="0.08">Asturias — 8%</option>
-          <option value="Baleares" data-itp="0.08">Baleares — 8%</option>
-          <option value="Canarias" data-itp="0.065">Canarias — 6.5%</option>
-          <option value="Cantabria" data-itp="0.10">Cantabria — 10%</option>
-          <option value="Castilla-La Mancha" data-itp="0.09">Castilla-La Mancha — 9%</option>
-          <option value="Castilla León" data-itp="0.08" selected>Castilla y León — 8%</option>
-          <option value="Cataluña" data-itp="0.10">Cataluña — 10%</option>
-          <option value="Ceuta" data-itp="0.06">Ceuta — 6%</option>
-          <option value="Madrid" data-itp="0.06">Madrid — 6%</option>
-          <option value="C. Valenciana" data-itp="0.10">C. Valenciana — 10%</option>
-          <option value="Extremadura" data-itp="0.08">Extremadura — 8%</option>
-          <option value="Galicia" data-itp="0.09">Galicia — 9%</option>
-          <option value="La Rioja" data-itp="0.07">La Rioja — 7%</option>
-          <option value="Melilla" data-itp="0.06">Melilla — 6%</option>
-          <option value="Murcia" data-itp="0.08">Murcia — 8%</option>
-          <option value="Navarra" data-itp="0.06">Navarra — 6%</option>
-          <option value="País Vasco" data-itp="0.04">País Vasco — 4%</option>
+          <option value="Andalucía" data-itp="0.08">Andalucía - 8%</option>
+          <option value="Aragón" data-itp="0.08">Aragón - 8%</option>
+          <option value="Asturias" data-itp="0.08">Asturias - 8%</option>
+          <option value="Baleares" data-itp="0.08">Baleares - 8%</option>
+          <option value="Canarias" data-itp="0.065">Canarias - 6.5%</option>
+          <option value="Cantabria" data-itp="0.10">Cantabria - 10%</option>
+          <option value="Castilla-La Mancha" data-itp="0.09">Castilla-La Mancha - 9%</option>
+          <option value="Castilla León" data-itp="0.08" selected>Castilla y León - 8%</option>
+          <option value="Cataluña" data-itp="0.10">Cataluña - 10%</option>
+          <option value="Ceuta" data-itp="0.06">Ceuta - 6%</option>
+          <option value="Madrid" data-itp="0.06">Madrid - 6%</option>
+          <option value="C. Valenciana" data-itp="0.10">C. Valenciana - 10%</option>
+          <option value="Extremadura" data-itp="0.08">Extremadura - 8%</option>
+          <option value="Galicia" data-itp="0.09">Galicia - 9%</option>
+          <option value="La Rioja" data-itp="0.07">La Rioja - 7%</option>
+          <option value="Melilla" data-itp="0.06">Melilla - 6%</option>
+          <option value="Murcia" data-itp="0.08">Murcia - 8%</option>
+          <option value="Navarra" data-itp="0.06">Navarra - 6%</option>
+          <option value="País Vasco" data-itp="0.04">País Vasco - 4%</option>
         </select>
       </div>
       <div class="field">
@@ -394,7 +394,7 @@ select{background-image:url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.
         <div class="ig hp"><span class="pfx">€</span><input type="number" id="conting" value="4000" oninput="recalc()"></div>
       </div>
     </div>
-    <div class="srow grn"><span class="sl">💰 Total inversión</span><span class="sv" id="tot-inv">—</span></div>
+    <div class="srow grn"><span class="sl">💰 Total inversión</span><span class="sv" id="tot-inv">-</span></div>
   </div>
 
   <!-- HIPOTECA -->
@@ -440,9 +440,9 @@ select{background-image:url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.
         </div>
       </div>
       <div class="fr3" style="margin-top:12px;">
-        <div class="peb" style="margin:0;"><div class="peb-l">Cuota mensual</div><div class="peb-v" id="cuota-disp" style="font-size:17px;">—</div></div>
-        <div class="peb" style="margin:0;"><div class="peb-l">Intereses prom.</div><div class="peb-v" id="int-disp" style="font-size:17px;">—</div></div>
-        <div class="peb" style="margin:0;"><div class="peb-l">Capital propio</div><div class="peb-v amb" id="cap-prop-disp" style="font-size:17px;">—</div></div>
+        <div class="peb" style="margin:0;"><div class="peb-l">Cuota mensual</div><div class="peb-v" id="cuota-disp" style="font-size:17px;">-</div></div>
+        <div class="peb" style="margin:0;"><div class="peb-l">Intereses prom.</div><div class="peb-v" id="int-disp" style="font-size:17px;">-</div></div>
+        <div class="peb" style="margin:0;"><div class="peb-l">Capital propio</div><div class="peb-v amb" id="cap-prop-disp" style="font-size:17px;">-</div></div>
       </div>
     </div>
   </div>
@@ -480,10 +480,10 @@ select{background-image:url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.
   <!-- GASTOS ANUALES -->
 
   <div class="card">
-    <div class="card-hdr"><div class="card-title">📉 Gastos Anuales</div><div class="card-badge" id="gastos-badge">—</div></div>
+    <div class="card-hdr"><div class="card-title">📉 Gastos Anuales</div><div class="card-badge" id="gastos-badge">-</div></div>
 
-```
-<div class="ibox blu" style="margin-bottom:14px;"><span>ℹ️</span> Campos marcados en <strong style="color:var(--green)">verde</strong> se calculan automáticamente como referencia — edítalos si tienes datos reales.</div>
+
+<div class="ibox blu" style="margin-bottom:14px;"><span>ℹ️</span> Campos marcados en <strong style="color:var(--green)">verde</strong> se calculan automáticamente como referencia - edítalos si tienes datos reales.</div>
 
 <div class="fr">
   <div class="field">
@@ -513,7 +513,7 @@ select{background-image:url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.
   <div class="field">
     <label class="lbl">Meses vacíos / rotación <span class="tip">?<span class="tipbox">Pérdida de renta entre inquilinos. 1 mes/año es estimación conservadora estándar (8.3%). En capitales con alta demanda puede ser 0.</span></span></label>
     <div class="ig hs"><input type="number" id="meses-v" value="1" min="0" max="12" step="0.5" oninput="recalc()"><span class="sfx">mes</span></div>
-    <div class="auto-hint" id="hint-vacio">—</div>
+    <div class="auto-hint" id="hint-vacio">-</div>
   </div>
   <div class="field">
     <label class="lbl">Gestión agencia (opcional) <span class="tip">?<span class="tipbox">Solo si delegas la gestión. Media del mercado: 8-10% de las rentas anuales. Pon 0 si gestionas tú directamente.</span></span></label>
@@ -521,7 +521,7 @@ select{background-image:url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.
   </div>
 </div>
 
-<div class="sep">Impacto fiscal IRPF <span style="font-weight:400;font-style:italic;letter-spacing:0;text-transform:none;font-size:10px;">— opcional</span></div>
+<div class="sep">Impacto fiscal IRPF <span style="font-weight:400;font-style:italic;letter-spacing:0;text-transform:none;font-size:10px;">- opcional</span></div>
 <div class="tgl-row">
   <label class="tgl"><input type="checkbox" id="irpf-chk" onchange="toggleIRPF()"><div class="tgl-trk"></div></label>
   <span class="tgl-lbl">Incluir impacto IRPF sobre rendimiento de capital</span>
@@ -540,9 +540,9 @@ select{background-image:url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.
   <div class="ibox grn"><span>✅</span> Reducción del 60% aplicada automáticamente (alquiler vivienda habitual, art. 23.2 LIRPF). Gastos deducibles: intereses hipoteca, seguros, IBI, comunidad y amortización técnica (3% valor construcción).</div>
 </div>
 
-<div class="srow" style="margin-top:14px;"><span class="sl">Total gastos anuales</span><span class="sv mono" id="tot-gastos">—</span></div>
-<div class="srow amb"><span class="sl">Gastos mensuales</span><span class="sv mono" id="tot-gastos-m">—</span></div>
-```
+<div class="srow" style="margin-top:14px;"><span class="sl">Total gastos anuales</span><span class="sv mono" id="tot-gastos">-</span></div>
+<div class="srow amb"><span class="sl">Gastos mensuales</span><span class="sv mono" id="tot-gastos-m">-</span></div>
+
 
   </div>
 </div><!-- /col der -->
@@ -566,7 +566,7 @@ select{background-image:url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.
     <div class="card">
       <div class="card-hdr">
         <div class="card-title">📋 Cuenta de Resultados</div>
-        <div class="card-badge" id="cf-badge">—</div>
+        <div class="card-badge" id="cf-badge">-</div>
       </div>
       <table class="cft"><thead><tr><th>Concepto</th><th>Mensual</th><th>Anual</th></tr></thead><tbody id="cf-body"><tr><td colspan="3" style="text-align:center;padding:28px;color:var(--ink3);">Pulsa Calcular para ver resultados</td></tr></tbody></table>
     </div>
@@ -597,35 +597,35 @@ select{background-image:url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.
       <span class="sm tc-mut italic">Objetivo: ≥ 5% neta</span>
     </div>
 
-```
+
 <div class="sim-g">
-  <div class="sim-lr"><span class="sim-lbl">Alquiler mensual</span><span class="sim-cur" id="sc-alq">—</span></div>
+  <div class="sim-lr"><span class="sim-lbl">Alquiler mensual</span><span class="sim-cur" id="sc-alq">-</span></div>
   <div class="rng"><input type="range" id="s-alq" min="200" max="5000" step="25" value="550" oninput="simular()"><div class="rval" id="sv-alq">550 €</div></div>
 </div>
 <div class="sim-g">
-  <div class="sim-lr"><span class="sim-lbl">Precio de compra</span><span class="sim-cur" id="sc-prec">—</span></div>
+  <div class="sim-lr"><span class="sim-lbl">Precio de compra</span><span class="sim-cur" id="sc-prec">-</span></div>
   <div class="rng"><input type="range" id="s-prec" min="30000" max="800000" step="1000" value="165000" oninput="simular()"><div class="rval" id="sv-prec">165.000 €</div></div>
 </div>
 <div class="sim-g">
-  <div class="sim-lr"><span class="sim-lbl">% Financiado</span><span class="sim-cur" id="sc-fin">—</span></div>
+  <div class="sim-lr"><span class="sim-lbl">% Financiado</span><span class="sim-cur" id="sc-fin">-</span></div>
   <div class="rng"><input type="range" id="s-fin" min="0" max="100" step="5" value="70" oninput="simular()"><div class="rval" id="sv-fin">70 %</div></div>
 </div>
 <div class="sim-g">
-  <div class="sim-lr"><span class="sim-lbl">Tipo interés TIN</span><span class="sim-cur" id="sc-tin">—</span></div>
+  <div class="sim-lr"><span class="sim-lbl">Tipo interés TIN</span><span class="sim-cur" id="sc-tin">-</span></div>
   <div class="rng"><input type="range" id="s-tin" min="0.5" max="8" step="0.1" value="2.8" oninput="simular()"><div class="rval" id="sv-tin">2.8 %</div></div>
 </div>
 <div class="sim-g">
-  <div class="sim-lr"><span class="sim-lbl">Gastos anuales totales</span><span class="sim-cur" id="sc-gas">—</span></div>
+  <div class="sim-lr"><span class="sim-lbl">Gastos anuales totales</span><span class="sim-cur" id="sc-gas">-</span></div>
   <div class="rng"><input type="range" id="s-gas" min="0" max="15000" step="100" value="4020" oninput="simular()"><div class="rval" id="sv-gas">4.020 €</div></div>
 </div>
 
 <div class="sim-res">
-  <div class="sim-ri"><div class="sim-rl">Rent. neta</div><div class="sim-rv" id="sim-neta">—</div></div>
-  <div class="sim-ri"><div class="sim-rl">Cash-Flow/mes</div><div class="sim-rv" id="sim-cf">—</div></div>
-  <div class="sim-ri"><div class="sim-rl">Cash on Cash</div><div class="sim-rv" id="sim-coc">—</div></div>
+  <div class="sim-ri"><div class="sim-rl">Rent. neta</div><div class="sim-rv" id="sim-neta">-</div></div>
+  <div class="sim-ri"><div class="sim-rl">Cash-Flow/mes</div><div class="sim-rv" id="sim-cf">-</div></div>
+  <div class="sim-ri"><div class="sim-rl">Cash on Cash</div><div class="sim-rv" id="sim-coc">-</div></div>
 </div>
 <div class="sim-vb" id="sim-vb"></div>
-```
+
 
   </div>
 
@@ -634,10 +634,10 @@ select{background-image:url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.
       <div class="card-title">⚖️ Punto de Equilibrio al 5% neto</div>
     </div>
     <p class="sm tc-mut mb4">Para que esta operación alcance el 5% de rentabilidad neta, necesitarías:</p>
-    <div class="peb"><div class="peb-l">📈 Alquiler mínimo necesario</div><div class="peb-v grn" id="pe-alq">—</div><div class="peb-s" id="pe-alq-s">—</div></div>
-    <div class="peb"><div class="peb-l">🤝 Precio máximo de compra</div><div class="peb-v amb" id="pe-prec">—</div><div class="peb-s" id="pe-prec-s">—</div></div>
-    <div class="peb"><div class="peb-l">✂️ Gastos máximos sostenibles</div><div class="peb-v" id="pe-gas">—</div><div class="peb-s">Con alquiler y precio actuales</div></div>
-    <div class="peb"><div class="peb-l">📊 Margen actual vs objetivo 5%</div><div class="peb-v" id="pe-marg" style="font-size:16px;">—</div><div class="prog mt4"><div class="progf" id="pe-prog" style="width:0%;background:var(--green-m)"></div></div></div>
+    <div class="peb"><div class="peb-l">📈 Alquiler mínimo necesario</div><div class="peb-v grn" id="pe-alq">-</div><div class="peb-s" id="pe-alq-s">-</div></div>
+    <div class="peb"><div class="peb-l">🤝 Precio máximo de compra</div><div class="peb-v amb" id="pe-prec">-</div><div class="peb-s" id="pe-prec-s">-</div></div>
+    <div class="peb"><div class="peb-l">✂️ Gastos máximos sostenibles</div><div class="peb-v" id="pe-gas">-</div><div class="peb-s">Con alquiler y precio actuales</div></div>
+    <div class="peb"><div class="peb-l">📊 Margen actual vs objetivo 5%</div><div class="peb-v" id="pe-marg" style="font-size:16px;">-</div><div class="prog mt4"><div class="progf" id="pe-prog" style="width:0%;background:var(--green-m)"></div></div></div>
   </div>
 
 </div>
@@ -904,9 +904,9 @@ function renderAnalisis(){
   const vw=document.getElementById('verdict-wrap');
   vw.style.display='block';
   let vc,ve,vt,vd;
-  if(r.rentNeta>=0.05){vc='v-ok';ve='✅';vt='Operación RENTABLE';vd=`Rentabilidad neta ${pct(r.rentNeta)} — supera el objetivo del 5%. Cash-flow mensual ${eurm(r.cfM)}. ${r.cfM>100?'El inmueble genera excedente mensual.':'El inmueble se autofinancia con el alquiler.'}`;}
-  else if(r.rentNeta>=0.03){vc='v-lim';ve='⚠️';vt='Operación en el LÍMITE';vd=`Rentabilidad neta ${pct(r.rentNeta)} — por debajo del 5% objetivo. Margen insuficiente para imprevistos. Revisa el Plan de Optimización.`;}
-  else{vc='v-no';ve='🚫';vt='Operación NO RENTABLE';vd=`Rentabilidad neta ${pct(r.rentNeta)} — muy por debajo del mínimo. Cash-flow ${eurm(r.cfM)}/mes. Requiere ajuste significativo en precio, alquiler o costes.`;}
+  if(r.rentNeta>=0.05){vc='v-ok';ve='✅';vt='Operación RENTABLE';vd=`Rentabilidad neta ${pct(r.rentNeta)} - supera el objetivo del 5%. Cash-flow mensual ${eurm(r.cfM)}. ${r.cfM>100?'El inmueble genera excedente mensual.':'El inmueble se autofinancia con el alquiler.'}`;}
+  else if(r.rentNeta>=0.03){vc='v-lim';ve='⚠️';vt='Operación en el LÍMITE';vd=`Rentabilidad neta ${pct(r.rentNeta)} - por debajo del 5% objetivo. Margen insuficiente para imprevistos. Revisa el Plan de Optimización.`;}
+  else{vc='v-no';ve='🚫';vt='Operación NO RENTABLE';vd=`Rentabilidad neta ${pct(r.rentNeta)} - muy por debajo del mínimo. Cash-flow ${eurm(r.cfM)}/mes. Requiere ajuste significativo en precio, alquiler o costes.`;}
   vw.innerHTML=`<div class="verdict ${vc}"><div class="v-emoji">${ve}</div><div><div class="v-title">${vt}</div><div class="v-desc">${vd}</div></div></div>`;
 
   // Métricas
@@ -1002,7 +1002,7 @@ function renderPE(r){
   document.getElementById('pe-prec').textContent=eur(Math.round(Math.max(0,precMax)));
   document.getElementById('pe-prec-s').textContent=precMax<r.totInv?`Pagas ${eur(Math.round(r.totInv-precMax))} de más`:`Tienes margen de ${eur(Math.round(precMax-r.totInv))}`;
   document.getElementById('pe-gas').textContent=gasMax>0?eur(Math.round(gasMax)):'Inviable con datos actuales';
-  document.getElementById('pe-marg').textContent=`${pct(r.rentNeta)} / 5,00% — ${r.rentNeta>=0.05?'✅ SUPERADO':'Faltan '+pct(0.05-r.rentNeta)}`;
+  document.getElementById('pe-marg').textContent=`${pct(r.rentNeta)} / 5,00% - ${r.rentNeta>=0.05?'✅ SUPERADO':'Faltan '+pct(0.05-r.rentNeta)}`;
   document.getElementById('pe-marg').style.color=r.rentNeta>=0.05?'var(--green)':'var(--red)';
   document.getElementById('pe-prog').style.width=Math.max(0,margen)+'%';
   document.getElementById('pe-prog').style.background=r.rentNeta>=0.05?'var(--green-m)':'#ef4444';
@@ -1056,8 +1056,8 @@ function simular(){
   document.getElementById('sim-coc').style.color=coc>=0.05?'#2eab68':coc>=0.03?'#f59e0b':'#ef4444';
   const vb=document.getElementById('sim-vb');
   if(rn>=0.05){vb.style.background='var(--green-bg)';vb.style.color='var(--green)';vb.textContent='✅ RENTABLE con estos parámetros';}
-  else if(rn>=0.03){vb.style.background='var(--amber-bg)';vb.style.color='var(--amber)';vb.textContent='⚠️ En el límite — ajusta los parámetros';}
-  else{vb.style.background='var(--red-bg)';vb.style.color='var(--red)';vb.textContent='🚫 No rentable — requiere ajustes significativos';}
+  else if(rn>=0.03){vb.style.background='var(--amber-bg)';vb.style.color='var(--amber)';vb.textContent='⚠️ En el límite - ajusta los parámetros';}
+  else{vb.style.background='var(--red-bg)';vb.style.color='var(--red)';vb.textContent='🚫 No rentable - requiere ajustes significativos';}
 }
 
 // ══ GUARDAR OPS ══
@@ -1080,7 +1080,7 @@ function renderOps(){
   el.innerHTML=ops.map(op=>{
     const sc=op.rentNeta>=0.05?'grn':op.rentNeta>=0.03?'amb':'red';
     const em=op.rentNeta>=0.05?'✅':op.rentNeta>=0.03?'⚠️':'🚫';
-    return`<div class="op-item"><div class="op-st ${sc}">${em}</div><div class="op-main"><div class="op-name">${op.nombre}</div><div class="op-meta">${op.comunidad||'—'} · ${op.fecha} · ${eur(op.precio)}</div></div><div class="op-kpis"><div class="op-kpi"><div class="op-kl">Rent. neta</div><div class="op-kv" style="color:${op.rentNeta>=0.05?'var(--green)':op.rentNeta>=0.03?'var(--amber)':'var(--red)'}">${pct(op.rentNeta)}</div></div><div class="op-kpi"><div class="op-kl">Cash-Flow</div><div class="op-kv" style="color:${op.cfM>=0?'var(--green)':'var(--red)'}">${eurm(op.cfM)}/mes</div></div><div class="op-kpi"><div class="op-kl">Cash on Cash</div><div class="op-kv">${pct(op.coc)}</div></div></div><div style="display:flex;gap:6px;"><button class="btn btn-s btn-ico btn-sm" title="Cargar" onclick="cargarOp(${op.id})">📂</button><button class="btn btn-d btn-ico btn-sm" title="Eliminar" onclick="elimOp(${op.id})">🗑️</button></div></div>`;
+    return`<div class="op-item"><div class="op-st ${sc}">${em}</div><div class="op-main"><div class="op-name">${op.nombre}</div><div class="op-meta">${op.comunidad||'-'} · ${op.fecha} · ${eur(op.precio)}</div></div><div class="op-kpis"><div class="op-kpi"><div class="op-kl">Rent. neta</div><div class="op-kv" style="color:${op.rentNeta>=0.05?'var(--green)':op.rentNeta>=0.03?'var(--amber)':'var(--red)'}">${pct(op.rentNeta)}</div></div><div class="op-kpi"><div class="op-kl">Cash-Flow</div><div class="op-kv" style="color:${op.cfM>=0?'var(--green)':'var(--red)'}">${eurm(op.cfM)}/mes</div></div><div class="op-kpi"><div class="op-kl">Cash on Cash</div><div class="op-kv">${pct(op.coc)}</div></div></div><div style="display:flex;gap:6px;"><button class="btn btn-s btn-ico btn-sm" title="Cargar" onclick="cargarOp(${op.id})">📂</button><button class="btn btn-d btn-ico btn-sm" title="Eliminar" onclick="elimOp(${op.id})">🗑️</button></div></div>`;
   }).join('');
 }
 function elimOp(id){if(!confirm('¿Eliminar?'))return;ops=ops.filter(o=>o.id!==id);localStorage.setItem('ic-v3',JSON.stringify(ops));renderOps();renderCmp();}
@@ -1109,7 +1109,7 @@ function renderCmp(){
     ['Cash on Cash',op=>pct(op.coc),'coc','desc'],
     ['ROCE',op=>pct(op.roce),'roce','desc'],
     ['Rent. total',op=>pct(op.rentTot),'rentTot','desc'],
-    ['PER (años)',op=>op.per?.toFixed(1)||'—','per','asc'],
+    ['PER (años)',op=>op.per?.toFixed(1)||'-','per','asc'],
     ['Hipoteca/Alquiler',op=>pct(op.rHip),'rHip','asc'],
     ['Veredicto',op=>op.rentNeta>=0.05?'✅ Rentable':op.rentNeta>=0.03?'⚠️ Límite':'🚫 No rentable',null,null],
   ];
