@@ -1,314 +1,1148 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InvestCheck Pro — Analizador Inmobiliario Completo</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InvestCheck — Rentabilidad de Alquiler</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:      #1a1c23;
+  --ink2:     #3d4054;
+  --ink3:     #7a7f96;
+  --paper:    #f5f4f0;
+  --paper2:   #eceae4;
+  --paper3:   #e2e0d8;
+  --white:    #ffffff;
+  --line:     #d8d6ce;
+  --green:    #1a7a4a;
+  --green-bg: #e8f5ee;
+  --green-m:  #2eab68;
+  --amber:    #b45309;
+  --amber-bg: #fef3e2;
+  --red:      #b91c1c;
+  --red-bg:   #fef2f2;
+  --blue:     #1d4ed8;
+  --blue-bg:  #eff6ff;
+  --r: 10px;
+  --r-sm: 6px;
+  --sh: 0 1px 3px rgba(26,28,35,.07), 0 4px 16px rgba(26,28,35,.05);
+  --sh-md: 0 4px 12px rgba(26,28,35,.1), 0 12px 40px rgba(26,28,35,.07);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;font-size:14px;line-height:1.6;min-height:100vh}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--paper2)}::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
 
-    <style>
-        :root {
-            --ink: #1a1c23;
-            --ink2: #3d4054;
-            --ink3: #7a7f96;
-            --paper: #f5f4f0;
-            --paper2: #eceae4;
-            --white: #ffffff;
-            --line: #d8d6ce;
-            --green: #1a7a4a;
-            --green-bg: #e8f5ee;
-            --red: #b91c1c;
-            --red-bg: #fef2f2;
-            --blue: #1d4ed8;
-            --r: 12px;
-            --r-sm: 8px;
-            --sh: 0 4px 20px rgba(26,28,35,.08);
-        }
+/* HEADER */
+header{background:var(–white);border-bottom:1.5px solid var(–line);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 1px 8px rgba(26,28,35,.06)}
+.logo{display:flex;align-items:center;gap:10px;font-family:‘Playfair Display’,serif;font-size:20px;color:var(–ink);letter-spacing:-.3px}
+.logo-mark{width:30px;height:30px;background:var(–green);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;font-family:‘IBM Plex Mono’,monospace}
+.logo-sub{font-size:11px;color:var(–ink3);font-family:‘IBM Plex Sans’,sans-serif;font-weight:400;letter-spacing:.5px;margin-top:-2px;display:block}
+.hdr-right{display:flex;align-items:center;gap:10px}
 
-        /* Reset y Base */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            background: var(--paper); 
-            color: var(--ink); 
-            font-family: 'IBM Plex Sans', sans-serif; 
-            font-size: 14px; 
-            line-height: 1.6;
-            min-height: 100vh;
-        }
+/* TAB BAR */
+.tab-bar{background:var(–white);border-bottom:1.5px solid var(–line);padding:0 28px;display:flex;gap:0;overflow-x:auto}
+.tab-btn{padding:13px 18px;border:none;background:transparent;color:var(–ink3);font-family:‘IBM Plex Sans’,sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;white-space:nowrap;transition:color .15s,border-color .15s;display:flex;align-items:center;gap:6px}
+.tab-btn:hover{color:var(–ink)}.tab-btn.active{color:var(–green);border-bottom-color:var(–green);font-weight:600}
+.tab-content{display:none}.tab-content.active{display:block;animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
-        /* Estructura Header */
-        header { 
-            background: var(--white); 
-            border-bottom: 1.5px solid var(--line); 
-            padding: 0 30px; 
-            height: 70px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            position: sticky; 
-            top: 0; 
-            z-index: 1000;
-        }
-        .logo { display: flex; align-items: center; gap: 12px; font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
-        .logo-mark { width: 35px; height: 35px; background: var(--green); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-family: 'IBM Plex Mono', monospace; }
+/* LAYOUT */
+.wrap{max-width:1380px;margin:0 auto;padding:26px 26px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:1080px){.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:860px){.g2,.g3{grid-template-columns:1fr}.g4{grid-template-columns:1fr 1fr}}
 
-        /* Navegación por Pestañas */
-        .tab-bar { 
-            background: var(--white); 
-            border-bottom: 1.5px solid var(--line); 
-            display: flex; 
-            justify-content: center;
-            gap: 10px;
-            position: sticky;
-            top: 70px;
-            z-index: 999;
-        }
-        .tab-btn { 
-            padding: 15px 25px; 
-            border: none; 
-            background: transparent; 
-            color: var(--ink3); 
-            font-weight: 600; 
-            cursor: pointer; 
-            border-bottom: 3px solid transparent;
-            transition: 0.3s;
-        }
-        .tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+/* CARD */
+.card{background:var(–white);border:1.5px solid var(–line);border-radius:var(–r);padding:20px 22px;box-shadow:var(–sh)}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(–paper2)}
+.card-title{font-family:‘Playfair Display’,serif;font-size:15px;color:var(–ink);display:flex;align-items:center;gap:7px}
+.card-badge{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:var(–paper2);color:var(–ink3)}
 
-        /* Contenedores */
-        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
-        .tab-content { display: none; animation: fadeIn 0.4s ease; }
-        .tab-content.active { display: block; }
+/* SECTION SEP */
+.sep{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(–ink3);margin:16px 0 10px;display:flex;align-items:center;gap:8px}
+.sep::after{content:’’;flex:1;height:1px;background:var(–line)}
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+/* FIELDS */
+.field{margin-bottom:12px}.field:last-child{margin-bottom:0}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.fl{display:flex;align-items:center;gap:8px}
+label.lbl{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(–ink3);margin-bottom:4px}
+.hint{font-size:10px;color:var(–ink3);font-weight:400;letter-spacing:0;text-transform:none;font-style:italic}
+.ig{position:relative}.ig .pfx,.ig .sfx{position:absolute;top:50%;transform:translateY(-50%);font-family:‘IBM Plex Mono’,monospace;font-size:12px;color:var(–ink3);pointer-events:none}
+.ig .pfx{left:10px}.ig .sfx{right:10px}
+.ig.hp input{padding-left:24px}.ig.hs input{padding-right:28px}
 
-        /* Cards y Formulario */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
-        .card { background: var(--white); padding: 25px; border-radius: var(--r); border: 1.5px solid var(--line); box-shadow: var(--sh); }
-        .card-h3 { font-family: 'Playfair Display', serif; margin-bottom: 20px; font-size: 18px; border-bottom: 1px solid var(--paper2); padding-bottom: 10px; }
+input[type=text],input[type=number],select{width:100%;padding:8px 11px;background:var(–paper);border:1.5px solid var(–line);border-radius:var(–r-sm);color:var(–ink);font-family:‘IBM Plex Mono’,monospace;font-size:13px;transition:border-color .15s,box-shadow .15s;outline:none;appearance:none}
+input[type=text]{font-family:‘IBM Plex Sans’,sans-serif;font-size:13px}
+input:focus,select:focus{border-color:var(–green);background:var(–white);box-shadow:0 0 0 3px rgba(26,122,74,.1)}
+input[readonly]{background:var(–paper2);color:var(–ink3);cursor:default}
+input[readonly]:focus{border-color:var(–line);box-shadow:none}
+select{background-image:url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.org/2000/svg’ width=‘10’ height=‘6’%3E%3Cpath d=‘M1 1l4 4 4-4’ stroke=’%237a7f96’ stroke-width=‘1.5’ fill=‘none’ stroke-linecap=‘round’ stroke-linejoin=‘round’/%3E%3C/svg%3E”);background-repeat:no-repeat;background-position:right 11px center;padding-right:30px;cursor:pointer}
 
-        .field { margin-bottom: 15px; }
-        .field label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px; }
-        input, select { 
-            width: 100%; 
-            padding: 12px; 
-            border-radius: var(--r-sm); 
-            border: 1.5px solid var(--line); 
-            background: var(--paper); 
-            font-family: 'IBM Plex Mono', monospace;
-            outline: none;
-        }
-        input:focus { border-color: var(--green); background: #fff; }
+/* RANGE SLIDER */
+.rng{display:flex;align-items:center;gap:12px;margin-top:6px}
+.rng input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:5px;background:var(–paper3);border-radius:3px;border:none;padding:0;cursor:pointer;outline:none;box-shadow:none}
+.rng input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(–white);border:2.5px solid var(–green);box-shadow:0 1px 5px rgba(26,122,74,.25);cursor:pointer;transition:transform .15s}
+.rng input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.12)}
+.rng input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(–white);border:2.5px solid var(–green);cursor:pointer}
+.rval{background:var(–ink);color:#fff;font-family:‘IBM Plex Mono’,monospace;font-size:12px;font-weight:500;padding:5px 11px;border-radius:5px;min-width:84px;text-align:center;flex-shrink:0}
 
-        /* Métricas de Resultado */
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-        .m-card { background: var(--white); padding: 25px; border-radius: var(--r); border: 1.5px solid var(--line); text-align: center; }
-        .m-val { display: block; font-size: 28px; font-family: 'Playfair Display', serif; font-weight: 700; margin: 10px 0; }
-        .m-lbl { font-size: 11px; text-transform: uppercase; color: var(--ink3); letter-spacing: 1px; }
-        
-        .footer-info { text-align: center; margin-top: 40px; color: var(--ink3); font-size: 12px; }
-    </style>
+/* TOGGLE */
+.tgl{position:relative;width:38px;height:20px;flex-shrink:0}
+.tgl input{opacity:0;width:0;height:0;position:absolute}
+.tgl-trk{position:absolute;inset:0;background:var(–paper3);border-radius:10px;border:1.5px solid var(–line);cursor:pointer;transition:background .2s,border-color .2s}
+.tgl-trk::after{content:’’;position:absolute;top:2px;left:2px;width:14px;height:14px;background:var(–ink3);border-radius:50%;transition:left .2s,background .2s}
+.tgl input:checked + .tgl-trk{background:var(–green);border-color:var(–green)}
+.tgl input:checked + .tgl-trk::after{left:18px;background:#fff}
+.tgl-row{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.tgl-lbl{font-size:13px;font-weight:500;color:var(–ink2);cursor:pointer}
+
+/* TOOLTIP */
+.tip{display:inline-flex;width:15px;height:15px;background:var(–paper2);border:1px solid var(–line);border-radius:50%;align-items:center;justify-content:center;font-size:9px;color:var(–ink3);cursor:help;position:relative;flex-shrink:0}
+.tip:hover .tipbox{opacity:1;pointer-events:auto}
+.tipbox{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(–ink);color:#f0f0ee;font-family:‘IBM Plex Sans’,sans-serif;font-size:11px;line-height:1.5;padding:8px 12px;border-radius:6px;width:230px;opacity:0;pointer-events:none;transition:opacity .15s;z-index:300;white-space:normal;text-align:left;font-weight:400;letter-spacing:0;text-transform:none}
+.tipbox::after{content:’’;position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(–ink)}
+
+/* INFO BOX */
+.ibox{border-radius:var(–r-sm);padding:9px 13px;font-size:12px;line-height:1.5;display:flex;gap:8px;align-items:flex-start;margin-top:10px}
+.ibox.grn{background:var(–green-bg);border:1px solid #b6e0ca;color:var(–green)}
+.ibox.amb{background:var(–amber-bg);border:1px solid #fcd29e;color:var(–amber)}
+.ibox.blu{background:var(–blue-bg);border:1px solid #bdd5fb;color:var(–blue)}
+.ibox.red{background:var(–red-bg);border:1px solid #fecaca;color:var(–red)}
+
+/* SUMMARY ROW */
+.srow{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(–paper);border-radius:var(–r-sm);border:1.5px solid var(–line);margin-top:12px}
+.srow .sl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(–ink3)}
+.srow .sv{font-family:‘IBM Plex Mono’,monospace;font-size:15px;font-weight:500;color:var(–ink)}
+.srow.grn{background:var(–green-bg);border-color:#b6e0ca}.srow.grn .sl{color:var(–green)}.srow.grn .sv{color:var(–green)}
+.srow.amb{background:var(–amber-bg);border-color:#fcd29e}.srow.amb .sl{color:var(–amber)}.srow.amb .sv{color:var(–amber)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border-radius:var(–r-sm);border:1.5px solid transparent;font-family:‘IBM Plex Sans’,sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-p{background:var(–green);color:#fff;border-color:var(–green)}.btn-p:hover{background:#155f3a;border-color:#155f3a;box-shadow:0 2px 8px rgba(26,122,74,.3)}
+.btn-s{background:var(–white);color:var(–ink2);border-color:var(–line)}.btn-s:hover{border-color:var(–ink3);color:var(–ink)}
+.btn-d{background:var(–red-bg);color:var(–red);border-color:#fecaca}.btn-d:hover{background:#fee2e2}
+.btn-lg{padding:12px 30px;font-size:15px}.btn-sm{padding:5px 11px;font-size:12px;border-radius:5px}.btn-ico{padding:6px;width:30px;height:30px}
+
+/* CALC BAR */
+.cbar{background:var(–ink);border-radius:var(–r);padding:16px 22px;display:flex;align-items:center;justify-content:space-between;margin:18px 0;gap:16px}
+.cbar-txt{color:rgba(255,255,255,.7);font-size:13px}.cbar-txt strong{color:#fff}
+
+/* VERDICT */
+.verdict{border-radius:var(–r);padding:18px 22px;display:flex;align-items:flex-start;gap:16px;margin-bottom:20px;border:2px solid;animation:popIn .3s ease}
+@keyframes popIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+.verdict.v-ok{background:var(–green-bg);border-color:#a3d9bb}
+.verdict.v-lim{background:var(–amber-bg);border-color:#fcd29e}
+.verdict.v-no{background:var(–red-bg);border-color:#fecaca}
+.v-emoji{font-size:34px;flex-shrink:0;line-height:1}
+.v-title{font-family:‘Playfair Display’,serif;font-size:19px}
+.verdict.v-ok .v-title{color:var(–green)}.verdict.v-lim .v-title{color:var(–amber)}.verdict.v-no .v-title{color:var(–red)}
+.v-desc{font-size:13px;color:var(–ink2);margin-top:4px;line-height:1.6;max-width:700px}
+
+/* METRICS GRID */
+.mg{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:18px}
+@media(max-width:1080px){.mg{grid-template-columns:repeat(2,1fr)}}
+.mc{background:var(–white);border:1.5px solid var(–line);border-radius:var(–r);padding:16px 18px;box-shadow:var(–sh);position:relative;overflow:hidden}
+.mc::after{content:’’;position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(–r) var(–r) 0 0}
+.mc.grn::after{background:var(–green-m)}.mc.amb::after{background:#f59e0b}.mc.red::after{background:#ef4444}.mc.neu::after{background:var(–line)}
+.mc-lbl{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(–ink3);margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.mc-val{font-family:‘Playfair Display’,serif;font-size:24px;line-height:1.1;color:var(–ink)}
+.mc.grn .mc-val{color:var(–green)}.mc.amb .mc-val{color:var(–amber)}.mc.red .mc-val{color:var(–red)}
+.mc-sub{font-size:11px;color:var(–ink3);margin-top:5px}
+.prog{height:4px;background:var(–paper2);border-radius:2px;margin-top:7px;overflow:hidden}
+.progf{height:100%;border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+
+/* CF TABLE */
+.cft{width:100%;border-collapse:collapse}
+.cft thead tr{border-bottom:2px solid var(–paper2)}
+.cft th{padding:7px 11px;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(–ink3);text-align:left}
+.cft th:not(:first-child){text-align:right}
+.cft td{padding:9px 11px;border-bottom:1px solid var(–paper2);font-size:13px}
+.cft td:not(:first-child){text-align:right;font-family:‘IBM Plex Mono’,monospace;font-size:12px}
+.cft .pos{color:var(–green)}.cft .neg{color:var(–red)}.cft .sub td{color:var(–ink3);font-size:11px;padding:6px 11px}
+.cft .tot{font-weight:700}.cft .tot td{border-top:2px solid var(–ink);border-bottom:none;background:var(–paper)}
+
+/* SEMAFORO */
+.smg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:1080px){.smg{grid-template-columns:repeat(2,1fr)}}
+.smi{border:1.5px solid var(–line);border-radius:var(–r-sm);padding:12px 14px;display:flex;align-items:center;gap:10px;background:var(–white)}
+.smd{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.smd.grn{background:var(–green-m)}.smd.amb{background:#f59e0b}.smd.red{background:#ef4444}
+.smi-lbl{font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(–ink3)}
+.smi-val{font-family:‘IBM Plex Mono’,monospace;font-size:14px;font-weight:500;color:var(–ink)}
+.smi-dsc{font-size:10px;color:var(–ink3);margin-top:1px}
+
+/* MEJORAS */
+.mej{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(–r-sm);border:1.5px solid;margin-bottom:9px}
+.mej:last-child{margin-bottom:0}
+.mej.alert{background:var(–amber-bg);border-color:#fcd29e}
+.mej.danger{background:var(–red-bg);border-color:#fecaca}
+.mej.ok{background:var(–green-bg);border-color:#b6e0ca}
+.mej.info{background:var(–blue-bg);border-color:#bdd5fb}
+.mej-ico{font-size:17px;flex-shrink:0}
+.mej-tit{font-size:13px;font-weight:600;color:var(–ink)}
+.mej-dsc{font-size:12px;color:var(–ink2);margin-top:2px}
+.mej-tgt{font-family:‘IBM Plex Mono’,monospace;font-size:11px;color:var(–green);margin-top:4px;font-weight:500}
+
+/* SIMULADOR */
+.sim-card{background:var(–white);border:1.5px solid var(–line);border-radius:var(–r);padding:20px 22px;box-shadow:var(–sh)}
+.sim-g{margin-bottom:18px}
+.sim-lr{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.sim-lbl{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(–ink3)}
+.sim-cur{font-size:10px;color:var(–ink3);font-style:italic}
+.sim-res{display:grid;grid-template-columns:repeat(3,1fr);background:var(–ink);border-radius:var(–r);padding:16px 18px;margin-top:18px;gap:0}
+.sim-ri{text-align:center;padding:0 14px}
+.sim-ri+.sim-ri{border-left:1px solid rgba(255,255,255,.1)}
+.sim-rl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:4px}
+.sim-rv{font-family:‘Playfair Display’,serif;font-size:22px;color:#fff}
+.sim-vb{margin-top:11px;padding:9px 14px;border-radius:var(–r-sm);font-size:13px;font-weight:600;text-align:center}
+
+/* PE BOX */
+.peb{background:var(–paper);border:1.5px solid var(–line);border-radius:var(–r-sm);padding:14px 16px;margin-bottom:10px}
+.peb:last-child{margin-bottom:0}
+.peb-l{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(–ink3);margin-bottom:3px}
+.peb-v{font-family:‘Playfair Display’,serif;font-size:22px;color:var(–ink)}
+.peb-v.grn{color:var(–green)}.peb-v.amb{color:var(–amber)}.peb-v.red{color:var(–red)}
+.peb-s{font-size:11px;color:var(–ink3);margin-top:2px}
+
+/* OP ITEMS */
+.op-item{background:var(–white);border:1.5px solid var(–line);border-radius:var(–r);padding:14px 18px;display:flex;align-items:center;gap:14px;transition:border-color .15s,box-shadow .15s;box-shadow:var(–sh);margin-bottom:10px}
+.op-item:hover{border-color:var(–green);box-shadow:0 2px 12px rgba(26,122,74,.1)}
+.op-st{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.op-st.grn{background:var(–green-bg)}.op-st.amb{background:var(–amber-bg)}.op-st.red{background:var(–red-bg)}
+.op-main{flex:1;min-width:0}
+.op-name{font-weight:600;font-size:14px;color:var(–ink)}
+.op-meta{font-size:11px;color:var(–ink3);margin-top:1px}
+.op-kpis{display:flex;gap:20px;flex-shrink:0}
+.op-kpi{text-align:right}
+.op-kl{font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(–ink3)}
+.op-kv{font-family:‘IBM Plex Mono’,monospace;font-size:13px;font-weight:500;color:var(–ink)}
+
+/* COMPARE */
+.cmp{width:100%;border-collapse:collapse}
+.cmp th{padding:10px 14px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(–ink3);text-align:left;border-bottom:2px solid var(–line);background:var(–paper)}
+.cmp th:first-child{background:transparent}
+.cmp td{padding:9px 14px;font-size:13px;border-bottom:1px solid var(–paper2)}
+.cmp td:not(:first-child){font-family:‘IBM Plex Mono’,monospace;font-size:12px}
+.cmp tr:hover td{background:var(–paper)}.cmp .best{color:var(–green);font-weight:700}
+
+/* MODAL */
+.ovl{position:fixed;inset:0;background:rgba(26,28,35,.5);backdrop-filter:blur(4px);z-index:400;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.ovl.open{opacity:1;pointer-events:auto}
+.modal{background:var(–white);border-radius:14px;padding:26px 28px;width:min(90vw,440px);box-shadow:var(–sh-md);transform:scale(.97);transition:transform .2s}
+.ovl.open .modal{transform:scale(1)}
+.modal-tit{font-family:‘Playfair Display’,serif;font-size:19px;margin-bottom:16px}
+.modal-act{display:flex;gap:9px;margin-top:18px}
+
+/* EMPTY */
+.empty{text-align:center;padding:48px 20px;color:var(–ink3)}
+.empty .ei{font-size:38px;opacity:.35;margin-bottom:12px}
+.empty p{font-size:13px}
+
+/* UTILS */
+.mb4{margin-bottom:16px}.mb6{margin-bottom:22px}.mt4{margin-top:14px}
+.flex-between{display:flex;justify-content:space-between;align-items:center}
+.gap2{gap:8px}.gap3{gap:12px}
+.tc-grn{color:var(–green)}.tc-amb{color:var(–amber)}.tc-red{color:var(–red)}.tc-mut{color:var(–ink3)}
+.mono{font-family:‘IBM Plex Mono’,monospace}
+.sm{font-size:13px}.italic{font-style:italic}
+.auto-hint{font-size:10px;color:var(–green);font-style:italic;margin-top:3px;font-weight:500;}
+</style>
+
 </head>
 <body>
 
 <header>
-    <div class="logo"><div class="logo-mark">IP</div> InvestCheck Pro</div>
+  <div class="logo">
+    <div class="logo-mark">IC</div>
+    <div>InvestCheck<span class="logo-sub">Calculadora de Rentabilidad Inmobiliaria</span></div>
+  </div>
+  <div class="hdr-right">
+    <button class="btn btn-s btn-sm" onclick="guardarOp()">💾 Guardar</button>
+    <button class="btn btn-p" onclick="calcIrAnalisis()">▶ Calcular rentabilidad</button>
+  </div>
 </header>
 
 <div class="tab-bar">
-    <button class="tab-btn active" onclick="openTab(event, 'tab-datos')">1. DATOS DE ENTRADA</button>
-    <button class="tab-btn" onclick="openTab(event, 'tab-analisis')">2. ANÁLISIS DE RESULTADOS</button>
+  <button class="tab-btn active" onclick="swTab('calc',this)">🏠 Datos</button>
+  <button class="tab-btn" onclick="swTab('anal',this)">📊 Análisis</button>
+  <button class="tab-btn" onclick="swTab('sim',this)">🎛️ Simulador</button>
+  <button class="tab-btn" onclick="swTab('ops',this)">📁 Operaciones</button>
+  <button class="tab-btn" onclick="swTab('cmp',this)">⚖️ Comparar</button>
 </div>
 
-<div class="container">
-    
-    <div id="tab-datos" class="tab-content active">
-        <div class="grid">
-            <div class="card">
-                <h3 class="card-h3">Inversión Inicial</h3>
-                <div class="field">
-                    <label>Precio de Adquisición (€)</label>
-                    <input type="number" id="p_compra" value="150000" oninput="calcular()">
-                </div>
-                <div class="field">
-                    <label>Gastos (ITP, Notaría, Registro %)</label>
-                    <input type="number" id="p_gastos" value="10" oninput="calcular()">
-                </div>
-                <div class="field">
-                    <label>Reforma y Mobiliario (€)</label>
-                    <input type="number" id="v_reforma" value="15000" oninput="calcular()">
-                </div>
-            </div>
+<!-- ═══════════════════ TAB DATOS ═══════════════════ -->
 
-            <div class="card">
-                <h3 class="card-h3">Financiación</h3>
-                <div class="field">
-                    <label>% Financiación (Hipoteca)</label>
-                    <input type="number" id="p_hipoteca" value="80" oninput="calcular()">
-                </div>
-                <div class="field">
-                    <label>Interés Anual (TIN %)</label>
-                    <input type="number" id="p_interes" value="3.5" step="0.1" oninput="calcular()">
-                </div>
-                <div class="field">
-                    <label>Plazo (Años)</label>
-                    <input type="number" id="v_plazo" value="25" oninput="calcular()">
-                </div>
-            </div>
+<div id="tab-calc" class="tab-content active">
+<div class="wrap">
+<div class="g2">
 
-            <div class="card">
-                <h3 class="card-h3">Ingresos y Gastos</h3>
-                <div class="field">
-                    <label>Alquiler Mensual Bruto (€)</label>
-                    <input type="number" id="v_alquiler" value="850" oninput="calcular()">
-                </div>
-                <div class="field">
-                    <label>Gastos Fijos (IBI, Seguros, Comunidad / mes)</label>
-                    <input type="number" id="v_gastos_mes" value="120" oninput="calcular()">
-                </div>
-                <div class="field">
-                    <label>Meses de Vacancia (estimado/año)</label>
-                    <input type="number" id="v_vacancia" value="0.5" step="0.1" oninput="calcular()">
-                </div>
-            </div>
+<!-- COLUMNA IZQ -->
 
-            <div class="card">
-                <h3 class="card-h3">Fiscalidad (IRPF)</h3>
-                <div class="field">
-                    <label>Tu Tramo Marginal de IRPF (%)</label>
-                    <input type="number" id="p_irpf" value="19" oninput="calcular()">
-                </div>
-                <div class="field">
-                    <label>¿Vivienda Habitual del Inquilino?</label>
-                    <select id="v_reduccion" onchange="calcular()">
-                        <option value="0.4">Sí (Reducción 60%)</option>
-                        <option value="1">No (Local o Temporal)</option>
-                    </select>
-                </div>
-            </div>
+<div style="display:flex;flex-direction:column;gap:16px;">
+
+  <!-- LOCALIZACIÓN -->
+
+  <div class="card">
+    <div class="card-hdr"><div class="card-title">📍 Localización</div></div>
+    <div class="field">
+      <label class="lbl">Referencia / Dirección</label>
+      <input type="text" id="direccion" value="Piso C/ Mayor 12, 3º B">
+    </div>
+    <div class="fr">
+      <div class="field">
+        <label class="lbl">Comunidad Autónoma</label>
+        <select id="comunidad" onchange="actualizarITP()">
+          <option value="">Seleccionar...</option>
+          <option value="Andalucía" data-itp="0.08">Andalucía — 8%</option>
+          <option value="Aragón" data-itp="0.08">Aragón — 8%</option>
+          <option value="Asturias" data-itp="0.08">Asturias — 8%</option>
+          <option value="Baleares" data-itp="0.08">Baleares — 8%</option>
+          <option value="Canarias" data-itp="0.065">Canarias — 6.5%</option>
+          <option value="Cantabria" data-itp="0.10">Cantabria — 10%</option>
+          <option value="Castilla-La Mancha" data-itp="0.09">Castilla-La Mancha — 9%</option>
+          <option value="Castilla León" data-itp="0.08" selected>Castilla y León — 8%</option>
+          <option value="Cataluña" data-itp="0.10">Cataluña — 10%</option>
+          <option value="Ceuta" data-itp="0.06">Ceuta — 6%</option>
+          <option value="Madrid" data-itp="0.06">Madrid — 6%</option>
+          <option value="C. Valenciana" data-itp="0.10">C. Valenciana — 10%</option>
+          <option value="Extremadura" data-itp="0.08">Extremadura — 8%</option>
+          <option value="Galicia" data-itp="0.09">Galicia — 9%</option>
+          <option value="La Rioja" data-itp="0.07">La Rioja — 7%</option>
+          <option value="Melilla" data-itp="0.06">Melilla — 6%</option>
+          <option value="Murcia" data-itp="0.08">Murcia — 8%</option>
+          <option value="Navarra" data-itp="0.06">Navarra — 6%</option>
+          <option value="País Vasco" data-itp="0.04">País Vasco — 4%</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="lbl">ITP <span class="tip">?<span class="tipbox">Carga automático por CC.AA. Activa modo manual si el impuesto se calcula sobre valor catastral (ej: Cataluña ley 2022).</span></span></label>
+        <div class="tgl-row" style="margin-bottom:6px;">
+          <label class="tgl"><input type="checkbox" id="itp-man-chk" onchange="toggleItpMan()"><div class="tgl-trk"></div></label>
+          <span class="tgl-lbl sm tc-mut">Manual (valor catastral)</span>
         </div>
+        <div id="itp-auto-r">
+          <div class="ig hp"><span class="pfx">%</span><input type="number" id="itp-pct-auto" readonly value="8.00"></div>
+        </div>
+        <div id="itp-man-r" style="display:none;">
+          <div class="fr" style="margin-top:4px;">
+            <div class="ig hp"><span class="pfx">%</span><input type="number" id="itp-pct-man" value="10" step="0.1" oninput="syncItpPct()"></div>
+            <div class="ig hp"><span class="pfx">€</span><input type="number" id="itp-imp-man" value="13700" step="100" oninput="syncItpImp()"></div>
+          </div>
+          <div class="ibox blu" style="margin-top:6px;"><span>ℹ️</span> Valor catastral ≠ precio compra. Introduce el importe de la gestoría.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COSTE ADQUISICIÓN -->
+
+  <div class="card">
+    <div class="card-hdr"><div class="card-title">🏷️ Coste de Adquisición</div><div class="card-badge">Inversión total</div></div>
+    <div class="fr">
+      <div class="field">
+        <label class="lbl">Precio de compra <span class="tip">?<span class="tipbox">Precio escriturado. Base para calcular ITP automático.</span></span></label>
+        <div class="ig hp"><span class="pfx">€</span><input type="number" id="precio" value="165000" oninput="actualizarITP();autoCalcularGastos();recalc()"></div>
+      </div>
+      <div class="field">
+        <label class="lbl">Impuesto ITP</label>
+        <div class="ig hp"><span class="pfx">€</span><input type="number" id="itp-imp" readonly value="13200"></div>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="field">
+        <label class="lbl">Notaría <span class="hint">~0.5-1% escritura</span></label>
+        <div class="ig hp"><span class="pfx">€</span><input type="number" id="notaria" value="1500" oninput="recalc()"></div>
+      </div>
+      <div class="field">
+        <label class="lbl">Registro propiedad</label>
+        <div class="ig hp"><span class="pfx">€</span><input type="number" id="registro" value="600" oninput="recalc()"></div>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="field">
+        <label class="lbl">Gestoría tramitación</label>
+        <div class="ig hp"><span class="pfx">€</span><input type="number" id="gestoria" value="400" oninput="recalc()"></div>
+      </div>
+      <div class="field">
+        <label class="lbl">Tasación hipotecaria <span class="tip">?<span class="tipbox">Obligatoria para hipoteca. Coste habitual 300-600€.</span></span></label>
+        <div class="ig hp"><span class="pfx">€</span><input type="number" id="tasacion" value="450" oninput="recalc()"></div>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="field">
+        <label class="lbl">Comisión agencia compra <span class="hint">típico 3-5%</span></label>
+        <div class="ig hp"><span class="pfx">€</span><input type="number" id="com-compra" value="0" oninput="recalc()"></div>
+      </div>
+      <div class="field">
+        <label class="lbl">Reforma <span class="tip">?<span class="tipbox">Integral: 600-1000€/m². Cosmética: 100-300€/m². Una buena reforma puede subir el alquiler significativamente.</span></span></label>
+        <div class="ig hp"><span class="pfx">€</span><input type="number" id="reforma" value="8000" oninput="recalc()"></div>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="field">
+        <label class="lbl">Mobiliario y equipamiento</label>
+        <div class="ig hp"><span class="pfx">€</span><input type="number" id="mobiliario" value="3500" oninput="recalc()"></div>
+      </div>
+      <div class="field">
+        <label class="lbl">Fondo imprevistos <span class="tip">?<span class="tipbox">Reserva para derramas inesperadas, averías. Mínimo recomendado: 2.000-5.000€. Se suma a la inversión.</span></span></label>
+        <div class="ig hp"><span class="pfx">€</span><input type="number" id="conting" value="4000" oninput="recalc()"></div>
+      </div>
+    </div>
+    <div class="srow grn"><span class="sl">💰 Total inversión</span><span class="sv" id="tot-inv">—</span></div>
+  </div>
+
+  <!-- HIPOTECA -->
+
+  <div class="card">
+    <div class="card-hdr">
+      <div class="card-title">🏦 Financiación Hipotecaria</div>
+      <label class="tgl"><input type="checkbox" id="hip-chk" checked onchange="toggleHip()"><div class="tgl-trk"></div></label>
+    </div>
+    <div id="hip-body">
+      <div class="fr">
+        <div class="field">
+          <label class="lbl">% Financiado <span class="tip">?<span class="tipbox">Bancos: hasta 80% primera vivienda, 70% inversión. Los gastos de compra van siempre por cuenta del comprador.</span></span></label>
+          <div class="ig hs"><input type="number" id="pct-fin" value="70" min="0" max="100" oninput="recalc()"><span class="sfx">%</span></div>
+        </div>
+        <div class="field">
+          <label class="lbl">Capital hipotecado</label>
+          <div class="ig hp"><span class="pfx">€</span><input type="number" id="hip-cap" readonly value="115500"></div>
+        </div>
+      </div>
+      <div class="fr">
+        <div class="field">
+          <label class="lbl">TIN anual <span class="tip">?<span class="tipbox">Euribor 12m ≈2.3% (may 2025). Hipoteca fija a largo plazo: 2.8-3.5%. Variable suele ser Euribor + 0.7-1%.</span></span></label>
+          <div class="ig hs"><input type="number" id="tin" value="2.80" step="0.05" min="0" max="15" oninput="recalc()"><span class="sfx">%</span></div>
+        </div>
+        <div class="field">
+          <label class="lbl">Plazo</label>
+          <div class="ig hs"><input type="number" id="plazo" value="25" min="5" max="40" oninput="recalc()"><span class="sfx">años</span></div>
+        </div>
+      </div>
+      <div class="fr">
+        <div class="field">
+          <label class="lbl">Tipo hipoteca</label>
+          <select id="tipo-hip" onchange="recalc()">
+            <option value="fijo">Tipo fijo</option>
+            <option value="variable">Tipo variable (Euribor+spread)</option>
+            <option value="mixto">Mixto (fijo 10 años)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="lbl">Comisión apertura <span class="hint">0-1%</span></label>
+          <div class="ig hs"><input type="number" id="com-hip" value="0" step="0.1" min="0" max="3" oninput="recalc()"><span class="sfx">%</span></div>
+        </div>
+      </div>
+      <div class="fr3" style="margin-top:12px;">
+        <div class="peb" style="margin:0;"><div class="peb-l">Cuota mensual</div><div class="peb-v" id="cuota-disp" style="font-size:17px;">—</div></div>
+        <div class="peb" style="margin:0;"><div class="peb-l">Intereses prom.</div><div class="peb-v" id="int-disp" style="font-size:17px;">—</div></div>
+        <div class="peb" style="margin:0;"><div class="peb-l">Capital propio</div><div class="peb-v amb" id="cap-prop-disp" style="font-size:17px;">—</div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /col izq -->
+
+<!-- COLUMNA DER -->
+
+<div style="display:flex;flex-direction:column;gap:16px;">
+
+  <!-- INGRESOS -->
+
+  <div class="card">
+    <div class="card-hdr"><div class="card-title">💰 Ingresos</div></div>
+    <div class="fr">
+      <div class="field">
+        <label class="lbl">Alquiler mensual</label>
+        <div class="ig hp"><span class="pfx">€</span><input type="number" id="alquiler" value="550" step="25" oninput="autoCalcularGastos();recalc()"></div>
+      </div>
+      <div class="field">
+        <label class="lbl">Ingresos anuales</label>
+        <div class="ig hp"><span class="pfx">€</span><input type="number" id="alq-anual" readonly value="6600"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="lbl">Revalorización anual esperada <span class="tip">?<span class="tipbox">IPC promedio España últimos 10 años ≈2%. No afecta al cash-flow real, sí a la rentabilidad total.</span></span></label>
+      <div class="rng">
+        <input type="range" id="rev-r" min="0" max="10" step="0.5" value="2" oninput="syncRev(this.value)">
+        <div class="rval" id="rev-box">2.0 %</div>
+      </div>
+      <input type="number" id="rev" value="2" style="display:none;" oninput="recalc()">
+    </div>
+  </div>
+
+  <!-- GASTOS ANUALES -->
+
+  <div class="card">
+    <div class="card-hdr"><div class="card-title">📉 Gastos Anuales</div><div class="card-badge" id="gastos-badge">—</div></div>
+
+```
+<div class="ibox blu" style="margin-bottom:14px;"><span>ℹ️</span> Campos marcados en <strong style="color:var(--green)">verde</strong> se calculan automáticamente como referencia — edítalos si tienes datos reales.</div>
+
+<div class="fr">
+  <div class="field">
+    <label class="lbl">IBI anual <span class="tip">?<span class="tipbox">Fijado por el ayuntamiento. Consulta el recibo del vendedor o catastro.es. Típico: 400-1.200€/año según municipio y valor catastral.</span></span></label>
+    <div class="ig hp"><span class="pfx">€</span><input type="number" id="ibi" value="600" oninput="recalc()"></div>
+  </div>
+  <div class="field">
+    <label class="lbl">Comunidad de propietarios <span class="tip">?<span class="tipbox">Cuota mensual × 12. Pregunta siempre al vendedor o administrador de fincas. Típico: 300-1.200€/año.</span></span></label>
+    <div class="ig hp"><span class="pfx">€</span><input type="number" id="comunidad-g" value="420" oninput="recalc()"></div>
+  </div>
+</div>
+
+<div class="fr">
+  <div class="field">
+    <label class="lbl">Seguros (paquete completo) <span class="tip">?<span class="tipbox">Agrupa: hogar + impago de alquiler + vida/amortizante. El paquete completo equivale aprox. al 60% de una mensualidad del alquiler como coste anual total. Ej: 550€/mes alquiler → ~330€/año en seguros.</span></span></label>
+    <div class="ig hp"><span class="pfx">€</span><input type="number" id="seguros-total" value="330" oninput="recalc()"></div>
+    <div class="auto-hint" id="hint-seguros">Auto: ~60% de una mensualidad/año</div>
+  </div>
+  <div class="field">
+    <label class="lbl">Mantenimiento y reparaciones <span class="tip">?<span class="tipbox">Regla estándar inversores: 1% del precio de compra por año. Incluye reparaciones menores, electrodomésticos, pintura. Reduce a 0.5% si es nuevo.</span></span></label>
+    <div class="ig hp"><span class="pfx">€</span><input type="number" id="mant" value="1650" oninput="recalc()"></div>
+    <div class="auto-hint" id="hint-mant">Auto: 1% precio compra/año</div>
+  </div>
+</div>
+
+<div class="fr">
+  <div class="field">
+    <label class="lbl">Meses vacíos / rotación <span class="tip">?<span class="tipbox">Pérdida de renta entre inquilinos. 1 mes/año es estimación conservadora estándar (8.3%). En capitales con alta demanda puede ser 0.</span></span></label>
+    <div class="ig hs"><input type="number" id="meses-v" value="1" min="0" max="12" step="0.5" oninput="recalc()"><span class="sfx">mes</span></div>
+    <div class="auto-hint" id="hint-vacio">—</div>
+  </div>
+  <div class="field">
+    <label class="lbl">Gestión agencia (opcional) <span class="tip">?<span class="tipbox">Solo si delegas la gestión. Media del mercado: 8-10% de las rentas anuales. Pon 0 si gestionas tú directamente.</span></span></label>
+    <div class="ig hs"><input type="number" id="gestion-pct" value="0" min="0" max="20" step="1" oninput="recalc()"><span class="sfx">%</span></div>
+  </div>
+</div>
+
+<div class="sep">Impacto fiscal IRPF <span style="font-weight:400;font-style:italic;letter-spacing:0;text-transform:none;font-size:10px;">— opcional</span></div>
+<div class="tgl-row">
+  <label class="tgl"><input type="checkbox" id="irpf-chk" onchange="toggleIRPF()"><div class="tgl-trk"></div></label>
+  <span class="tgl-lbl">Incluir impacto IRPF sobre rendimiento de capital</span>
+</div>
+<div id="irpf-body" style="display:none;">
+  <div class="fr">
+    <div class="field">
+      <label class="lbl">Tipo marginal IRPF <span class="tip">?<span class="tipbox">Tramos 2025: ≤12.450€→19%, ≤20.200€→24%, ≤35.200€→30%, ≤60.000€→37%, resto→45%.</span></span></label>
+      <div class="ig hs"><input type="number" id="irpf-tipo" value="24" min="0" max="50" step="1" oninput="recalc()"><span class="sfx">%</span></div>
+    </div>
+    <div class="field">
+      <label class="lbl">IRPF estimado anual</label>
+      <div class="ig hp"><span class="pfx">€</span><input type="number" id="irpf-calc" readonly value="0"></div>
+    </div>
+  </div>
+  <div class="ibox grn"><span>✅</span> Reducción del 60% aplicada automáticamente (alquiler vivienda habitual, art. 23.2 LIRPF). Gastos deducibles: intereses hipoteca, seguros, IBI, comunidad y amortización técnica (3% valor construcción).</div>
+</div>
+
+<div class="srow" style="margin-top:14px;"><span class="sl">Total gastos anuales</span><span class="sv mono" id="tot-gastos">—</span></div>
+<div class="srow amb"><span class="sl">Gastos mensuales</span><span class="sv mono" id="tot-gastos-m">—</span></div>
+```
+
+  </div>
+</div><!-- /col der -->
+</div><!-- /g2 -->
+
+<div class="cbar">
+  <div class="cbar-txt">¿Datos completos? <strong>Calcular rentabilidad</strong> muestra el análisis completo. <br><span style="color:rgba(255,255,255,.4);font-size:11px;">Objetivo mínimo: rentabilidad neta ≥ 5%</span></div>
+  <button class="btn btn-p btn-lg" onclick="calcIrAnalisis()">▶ Calcular rentabilidad</button>
+</div>
+
+</div><!-- /wrap -->
+</div><!-- /tab-calc -->
+
+<!-- ═══════════════════ TAB ANÁLISIS ═══════════════════ -->
+
+<div id="tab-anal" class="tab-content">
+<div class="wrap">
+  <div id="verdict-wrap" style="display:none;"></div>
+  <div class="mg" id="mg"></div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-hdr">
+        <div class="card-title">📋 Cuenta de Resultados</div>
+        <div class="card-badge" id="cf-badge">—</div>
+      </div>
+      <table class="cft"><thead><tr><th>Concepto</th><th>Mensual</th><th>Anual</th></tr></thead><tbody id="cf-body"><tr><td colspan="3" style="text-align:center;padding:28px;color:var(--ink3);">Pulsa Calcular para ver resultados</td></tr></tbody></table>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">🔧 Plan de Optimización</div></div>
+      <div id="mej-list"><div class="empty"><div class="ei">📊</div><p>Calcula para ver sugerencias</p></div></div>
+    </div>
+  </div>
+  <div class="card mt4">
+    <div class="card-hdr">
+      <div class="card-title">🚦 Semáforo de Ratios</div>
+      <span class="sm tc-mut">🟢 Óptimo &nbsp;🟡 Límite &nbsp;🔴 Problema</span>
+    </div>
+    <div class="smg" id="smg"><div class="smi"><div class="smd" style="background:var(--line)"></div><div><div class="smi-lbl">Sin calcular</div></div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════ TAB SIMULADOR ═══════════════════ -->
+
+<div id="tab-sim" class="tab-content">
+<div class="wrap">
+<div class="g2">
+
+  <div class="sim-card">
+    <div class="card-hdr" style="border-bottom:1px solid var(--paper2);padding-bottom:12px;margin-bottom:16px;">
+      <div class="card-title">🎛️ Ajusta los parámetros</div>
+      <span class="sm tc-mut italic">Objetivo: ≥ 5% neta</span>
     </div>
 
-    <div id="tab-analisis" class="tab-content">
-        <div class="metrics-grid">
-            <div class="m-card">
-                <span class="m-lbl">Inversión Real Total</span>
-                <span class="m-val" id="res_inv_total">0 €</span>
-            </div>
-            <div class="m-card">
-                <span class="m-lbl">Capital Propio Aportado</span>
-                <span class="m-val" id="res_cash_in">0 €</span>
-            </div>
-            <div class="m-card">
-                <span class="m-lbl">Rentabilidad Bruta</span>
-                <span class="m-val" id="res_bruta">0%</span>
-            </div>
-            <div class="m-card">
-                <span class="m-lbl">Rentabilidad Neta</span>
-                <span class="m-val" id="res_neta" style="color: var(--green);">0%</span>
-            </div>
-            <div class="m-card" id="card_cf">
-                <span class="m-lbl">Cash Flow Mensual Neto</span>
-                <span class="m-val" id="res_cf">0 €</span>
-            </div>
-            <div class="m-card">
-                <span class="m-lbl">ROE (Rent. sobre Capital)</span>
-                <span class="m-val" id="res_roe">0%</span>
-            </div>
-        </div>
-        <div class="footer-info">
-            * El cálculo de la hipoteca utiliza el sistema de amortización francés. La rentabilidad neta incluye gastos operativos y vacancia estimada.
-        </div>
+```
+<div class="sim-g">
+  <div class="sim-lr"><span class="sim-lbl">Alquiler mensual</span><span class="sim-cur" id="sc-alq">—</span></div>
+  <div class="rng"><input type="range" id="s-alq" min="200" max="5000" step="25" value="550" oninput="simular()"><div class="rval" id="sv-alq">550 €</div></div>
+</div>
+<div class="sim-g">
+  <div class="sim-lr"><span class="sim-lbl">Precio de compra</span><span class="sim-cur" id="sc-prec">—</span></div>
+  <div class="rng"><input type="range" id="s-prec" min="30000" max="800000" step="1000" value="165000" oninput="simular()"><div class="rval" id="sv-prec">165.000 €</div></div>
+</div>
+<div class="sim-g">
+  <div class="sim-lr"><span class="sim-lbl">% Financiado</span><span class="sim-cur" id="sc-fin">—</span></div>
+  <div class="rng"><input type="range" id="s-fin" min="0" max="100" step="5" value="70" oninput="simular()"><div class="rval" id="sv-fin">70 %</div></div>
+</div>
+<div class="sim-g">
+  <div class="sim-lr"><span class="sim-lbl">Tipo interés TIN</span><span class="sim-cur" id="sc-tin">—</span></div>
+  <div class="rng"><input type="range" id="s-tin" min="0.5" max="8" step="0.1" value="2.8" oninput="simular()"><div class="rval" id="sv-tin">2.8 %</div></div>
+</div>
+<div class="sim-g">
+  <div class="sim-lr"><span class="sim-lbl">Gastos anuales totales</span><span class="sim-cur" id="sc-gas">—</span></div>
+  <div class="rng"><input type="range" id="s-gas" min="0" max="15000" step="100" value="4020" oninput="simular()"><div class="rval" id="sv-gas">4.020 €</div></div>
+</div>
+
+<div class="sim-res">
+  <div class="sim-ri"><div class="sim-rl">Rent. neta</div><div class="sim-rv" id="sim-neta">—</div></div>
+  <div class="sim-ri"><div class="sim-rl">Cash-Flow/mes</div><div class="sim-rv" id="sim-cf">—</div></div>
+  <div class="sim-ri"><div class="sim-rl">Cash on Cash</div><div class="sim-rv" id="sim-coc">—</div></div>
+</div>
+<div class="sim-vb" id="sim-vb"></div>
+```
+
+  </div>
+
+  <div class="sim-card">
+    <div class="card-hdr" style="border-bottom:1px solid var(--paper2);padding-bottom:12px;margin-bottom:16px;">
+      <div class="card-title">⚖️ Punto de Equilibrio al 5% neto</div>
     </div>
+    <p class="sm tc-mut mb4">Para que esta operación alcance el 5% de rentabilidad neta, necesitarías:</p>
+    <div class="peb"><div class="peb-l">📈 Alquiler mínimo necesario</div><div class="peb-v grn" id="pe-alq">—</div><div class="peb-s" id="pe-alq-s">—</div></div>
+    <div class="peb"><div class="peb-l">🤝 Precio máximo de compra</div><div class="peb-v amb" id="pe-prec">—</div><div class="peb-s" id="pe-prec-s">—</div></div>
+    <div class="peb"><div class="peb-l">✂️ Gastos máximos sostenibles</div><div class="peb-v" id="pe-gas">—</div><div class="peb-s">Con alquiler y precio actuales</div></div>
+    <div class="peb"><div class="peb-l">📊 Margen actual vs objetivo 5%</div><div class="peb-v" id="pe-marg" style="font-size:16px;">—</div><div class="prog mt4"><div class="progf" id="pe-prog" style="width:0%;background:var(--green-m)"></div></div></div>
+  </div>
+
+</div>
+</div>
+</div><!-- /tab-sim -->
+
+<!-- ═══════════════════ TAB OPERACIONES ═══════════════════ -->
+
+<div id="tab-ops" class="tab-content">
+<div class="wrap">
+  <div class="flex-between mb6">
+    <div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:22px;">Operaciones guardadas</h2>
+      <p class="tc-mut sm" style="margin-top:2px;">Persistente en este navegador. Compara en la pestaña ⚖️.</p>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-s btn-sm" onclick="exportCSV()">⬇ Exportar CSV</button>
+      <button class="btn btn-p" onclick="guardarOp()">💾 Guardar actual</button>
+    </div>
+  </div>
+  <div id="op-list"></div>
+</div>
+</div>
+
+<!-- ═══════════════════ TAB COMPARAR ═══════════════════ -->
+
+<div id="tab-cmp" class="tab-content">
+<div class="wrap">
+  <div class="flex-between mb6">
+    <div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:22px;">Comparador</h2>
+      <p class="tc-mut sm" style="margin-top:2px;">Mejor valor de cada fila resaltado en verde.</p>
+    </div>
+  </div>
+  <div id="cmp-content"></div>
+</div>
+</div>
+
+<!-- MODAL -->
+
+<div class="ovl" id="ovl">
+  <div class="modal">
+    <div class="modal-tit">💾 Guardar operación</div>
+    <div class="field">
+      <label class="lbl">Nombre de referencia</label>
+      <input type="text" id="modal-nombre" placeholder="Ej: Piso Salamanca centro, 80m²" onkeydown="if(event.key==='Enter')confirmarGuardar()">
+    </div>
+    <div class="modal-act">
+      <button class="btn btn-s" onclick="closeModal()" style="flex:1">Cancelar</button>
+      <button class="btn btn-p" onclick="confirmarGuardar()" style="flex:1">Guardar</button>
+    </div>
+  </div>
 </div>
 
 <script>
-    // Función para cambiar de pestañas
-    function openTab(evt, tabName) {
-        var i, tabcontent, tablinks;
-        tabcontent = document.getElementsByClassName("tab-content");
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].classList.remove("active");
-        }
-        tablinks = document.getElementsByClassName("tab-btn");
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].classList.remove("active");
-        }
-        document.getElementById(tabName).classList.add("active");
-        evt.currentTarget.classList.add("active");
-        calcular();
-    }
+// ══ STATE ══
+let itpManual=false, usaHip=true, usaIRPF=false;
+let R=null;
+let ops=JSON.parse(localStorage.getItem('ic-v3')||'[]');
 
-    // Motor de cálculo
-    function calcular() {
-        // Captura de valores
-        const p_compra = parseFloat(document.getElementById('p_compra').value) || 0;
-        const p_gastos = (parseFloat(document.getElementById('p_gastos').value) || 0) / 100;
-        const v_reforma = parseFloat(document.getElementById('v_reforma').value) || 0;
-        
-        const p_hipoteca = (parseFloat(document.getElementById('p_hipoteca').value) || 0) / 100;
-        const p_interes = (parseFloat(document.getElementById('p_interes').value) || 0) / 100 / 12;
-        const v_plazo = (parseFloat(document.getElementById('v_plazo').value) || 0) * 12;
+// ══ AUTO-CALCULAR GASTOS (mantenimiento + seguros) ══
+// Seguros totales = 60% cuota mensual alquiler en términos anuales
+// Distribución habitual: hogar 17%, impago 25%, vida 13%, RC 5% → suma 60%
+// Mantenimiento = 1% precio compra / año
+function autoCalcularGastos(){
+  const alqM = parseFloat(g('alquiler')) || 0;
+  const precio = parseFloat(g('precio')) || 0;
 
-        const v_alquiler = parseFloat(document.getElementById('v_alquiler').value) || 0;
-        const v_gastos_mes = parseFloat(document.getElementById('v_gastos_mes').value) || 0;
-        const v_vacancia = parseFloat(document.getElementById('v_vacancia').value) || 0;
-        
-        const p_irpf = (parseFloat(document.getElementById('p_irpf').value) || 0) / 100;
-        const v_reduccion = parseFloat(document.getElementById('v_reduccion').value);
+  // Mantenimiento: 1% precio compra anual
+  const mantVal = Math.round(precio * 0.01);
+  const elMant = document.getElementById('mant');
+  if(elMant) elMant.value = mantVal;
+  const hMant = document.getElementById('hint-mant');
+  if(hMant) hMant.textContent = `Auto: 1% de ${precio.toLocaleString('es-ES')}€ = ${mantVal.toLocaleString('es-ES')}€/año`;
 
-        // 1. Inversión Total
-        const gastos_adq = p_compra * p_gastos;
-        const inv_total = p_compra + gastos_adq + v_reforma;
-        
-        // 2. Financiación y Cash-In
-        const m_hipoteca = p_compra * p_hipoteca;
-        const cash_in = inv_total - m_hipoteca;
-        
-        let cuota_hipo = 0;
-        if (m_hipoteca > 0 && p_interes > 0) {
-            cuota_hipo = m_hipoteca * ( (p_interes * Math.pow(1 + p_interes, v_plazo)) / (Math.pow(1 + p_interes, v_plazo) - 1) );
-        }
+  // Seguros totales: 60% de una mensualidad del alquiler como coste anual
+  // Ej: 550€/mes alquiler → 330€/año total seguros (hogar+impago+vida)
+  const segTotal = Math.round(alqM * 0.60);
+  const elSeg = document.getElementById('seguros-total');
+  if(elSeg) elSeg.value = segTotal;
+  const hSeg = document.getElementById('hint-seguros');
+  if(hSeg) hSeg.textContent = `Auto: 60% de ${alqM}€/mes = ${segTotal}€/año en seguros`;
 
-        // 3. Rentabilidades
-        const ingresos_anuales = v_alquiler * (12 - v_vacancia);
-        const gastos_anuales = v_gastos_mes * 12;
-        const beneficio_bruto = ingresos_anuales - gastos_anuales;
+  // Hint vacíos
+  const mV = parseFloat(g('meses-v')) || 0;
+  const hVac = document.getElementById('hint-vacio');
+  if(hVac && alqM > 0) hVac.textContent = `Pérdida estimada: ${Math.round(alqM * mV).toLocaleString('es-ES')}€/año`;
+}
 
-        // Impuestos (Simplificado: Base = Beneficio * coeficiente reducción)
-        const impuestos = (beneficio_bruto * v_reduccion) * p_irpf;
-        const beneficio_neto_real = beneficio_bruto - impuestos;
 
-        const rent_bruta = ((v_alquiler * 12) / inv_total) * 100;
-        const rent_neta = (beneficio_bruto / inv_total) * 100;
-        
-        // 4. Cash Flow y ROE
-        const cash_flow_anual = beneficio_neto_real - (cuota_hipo * 12);
-        const cash_flow_mensual = cash_flow_anual / 12;
-        const roe = (cash_flow_anual / cash_in) * 100;
+function swTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='anal')renderAnalisis();
+  if(id==='sim')initSim();
+  if(id==='ops')renderOps();
+  if(id==='cmp')renderCmp();
+}
 
-        // Inyectar resultados en el DOM
-        document.getElementById('res_inv_total').innerText = Math.round(inv_total).toLocaleString() + " €";
-        document.getElementById('res_cash_in').innerText = Math.round(cash_in).toLocaleString() + " €";
-        document.getElementById('res_bruta').innerText = rent_bruta.toFixed(2) + "%";
-        document.getElementById('res_neta').innerText = rent_neta.toFixed(2) + "%";
-        document.getElementById('res_cf').innerText = Math.round(cash_flow_mensual).toLocaleString() + " €/mes";
-        document.getElementById('res_roe').innerText = roe.toFixed(2) + "%";
+// ══ ITP ══
+function actualizarITP(){
+  if(itpManual)return;
+  const s=document.getElementById('comunidad');
+  const p=parseFloat(s.options[s.selectedIndex]?.getAttribute('data-itp')||0);
+  const pr=parseFloat(g('precio'))||0;
+  document.getElementById('itp-pct-auto').value=(p*100).toFixed(2);
+  document.getElementById('itp-imp').value=Math.round(pr*p);
+  autoCalcularGastos();
+  recalc();
+}
+function toggleItpMan(){
+  itpManual=document.getElementById('itp-man-chk').checked;
+  document.getElementById('itp-auto-r').style.display=itpManual?'none':'block';
+  document.getElementById('itp-man-r').style.display=itpManual?'block':'none';
+  if(!itpManual)actualizarITP(); else syncItpPct();
+}
+function syncItpPct(){
+  const p=parseFloat(g('itp-pct-man'))/100;
+  const pr=parseFloat(g('precio'))||0;
+  const i=Math.round(pr*p);
+  document.getElementById('itp-imp-man').value=i;
+  document.getElementById('itp-imp').value=i;
+  recalc();
+}
+function syncItpImp(){
+  const i=parseFloat(g('itp-imp-man'))||0;
+  const pr=parseFloat(g('precio'))||0;
+  if(pr>0)document.getElementById('itp-pct-man').value=((i/pr)*100).toFixed(2);
+  document.getElementById('itp-imp').value=i;
+  recalc();
+}
 
-        // Alerta visual si el cash flow es negativo
-        const cardCf = document.getElementById('card_cf');
-        if (cash_flow_mensual < 0) {
-            cardCf.style.backgroundColor = "var(--red-bg)";
-            document.getElementById('res_cf').style.color = "var(--red)";
-        } else {
-            cardCf.style.backgroundColor = "var(--white)";
-            document.getElementById('res_cf').style.color = "var(--ink)";
-        }
-    }
+// ══ TOGGLES ══
+function toggleHip(){
+  usaHip=document.getElementById('hip-chk').checked;
+  document.getElementById('hip-body').style.display=usaHip?'block':'none';
+  recalc();
+}
+function toggleIRPF(){
+  usaIRPF=document.getElementById('irpf-chk').checked;
+  document.getElementById('irpf-body').style.display=usaIRPF?'block':'none';
+  recalc();
+}
 
-    // Ejecución inicial
-    window.onload = calcular;
+// ══ REV ══
+function syncRev(v){
+  document.getElementById('rev').value=v;
+  document.getElementById('rev-box').textContent=parseFloat(v).toFixed(1)+' %';
+  recalc();
+}
+
+// ══ HELPERS ══
+function g(id){return document.getElementById(id)?.value||0}
+function n(v){return isFinite(v)&&!isNaN(v)?v:0}
+function eur(v,d=0){return n(v).toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d})+' €'}
+function pct(v,d=2){return(n(v)*100).toFixed(d)+'%'}
+function eurm(v){return eur(v,2)}
+
+// ══ HIPOTECA ══
+function calcHip(cap,tin_p,pl_a){
+  const n=pl_a*12, r=(tin_p/100)/12;
+  if(r===0||n===0)return{cuota:cap/Math.max(n,1),int:0,amort:cap/Math.max(n,1)};
+  const cuota=cap*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+  const i1=cap*r, iN=(cap/2)*r, iprom=(i1+iN)/2;
+  return{cuota,int:iprom,amort:cuota-iprom};
+}
+
+// ══ CÁLCULO PRINCIPAL ══
+function calcular(){
+  const precio=parseFloat(g('precio'))||0;
+  const itp=parseFloat(g('itp-imp'))||0;
+  const notaria=parseFloat(g('notaria'))||0;
+  const registro=parseFloat(g('registro'))||0;
+  const gestoria=parseFloat(g('gestoria'))||0;
+  const tasacion=parseFloat(g('tasacion'))||0;
+  const comCompra=parseFloat(g('com-compra'))||0;
+  const reforma=parseFloat(g('reforma'))||0;
+  const mob=parseFloat(g('mobiliario'))||0;
+  const conting=parseFloat(g('conting'))||0;
+  const totInv=precio+itp+notaria+registro+gestoria+tasacion+comCompra+reforma+mob+conting;
+
+  const alqM=parseFloat(g('alquiler'))||0;
+  const alqA=alqM*12;
+  const rev=parseFloat(g('rev'))/100||0;
+
+  let cuota=0,int=0,amort=0,hipCap=0,capProp=0;
+  if(usaHip){
+    const pf=parseFloat(g('pct-fin'))/100||0;
+    const pl=parseFloat(g('plazo'))||25;
+    const tin=parseFloat(g('tin'))||0;
+    hipCap=precio*pf;
+    capProp=Math.max(0,totInv-hipCap);
+    const h=calcHip(hipCap,tin,pl);
+    cuota=h.cuota;int=h.int;amort=h.amort;
+  }else{capProp=totInv;}
+
+  const ibi=parseFloat(g('ibi'))||0;
+  const comG=parseFloat(g('comunidad-g'))||0;
+  const seguros=parseFloat(g('seguros-total'))||0;
+  const mant=parseFloat(g('mant'))||0;
+  const mV=parseFloat(g('meses-v'))||0;
+  const gPct=parseFloat(g('gestion-pct'))/100||0;
+
+  const perdV=alqM*mV;
+  const gestImp=alqA*gPct;
+  const gastOp=ibi+comG+seguros+mant+perdV+gestImp;
+
+  let irpfA=0;
+  if(usaIRPF){
+    const tipo=parseFloat(g('irpf-tipo'))/100||0;
+    const ded=int*12+seguros+ibi+comG+mant+precio*0.03;
+    const bp=alqA-ded;
+    const red=Math.max(0,bp*0.60);
+    const bi=Math.max(0,bp-red);
+    irpfA=bi*tipo;
+    document.getElementById('irpf-calc').value=Math.round(irpfA);
+  }
+
+  const gastTot=gastOp+irpfA;
+  const ingNeto=alqA-gastTot;
+  const cfM=alqM-cuota-gastOp/12-irpfA/12;
+  const cfA=cfM*12;
+
+  const rentBruta=totInv>0?alqA/totInv:0;
+  const rentNeta=totInv>0?ingNeto/totInv:0;
+  const coc=capProp>0?cfA/capProp:0;
+  const roce=capProp>0?ingNeto/capProp:0;
+  const rentTot=roce+rev;
+  const per=alqA>0?totInv/alqA:0;
+  const rHip=alqM>0?cuota/alqM:0;
+  const rGast=alqA>0?gastOp/alqA:0;
+
+  // UI updates
+  document.getElementById('alq-anual').value=Math.round(alqA);
+  document.getElementById('hip-cap').value=Math.round(hipCap);
+  document.getElementById('tot-inv').textContent=eur(totInv);
+  document.getElementById('tot-gastos').textContent=eur(gastTot);
+  document.getElementById('tot-gastos-m').textContent=eurm(gastTot/12)+'/mes';
+  document.getElementById('cuota-disp').textContent=eurm(cuota);
+  document.getElementById('int-disp').textContent=eurm(int);
+  document.getElementById('cap-prop-disp').textContent=eur(capProp);
+
+  return{precio,itp,notaria,registro,gestoria,tasacion,comCompra,reforma,mob,conting,totInv,
+    alqM,alqA,rev,hipCap,capProp,cuota,int,amort,
+    ibi,comG,seguros,mant,perdV,gestImp,
+    gastOp,irpfA,gastTot,ingNeto,cfM,cfA,
+    rentBruta,rentNeta,coc,roce,rentTot,per,rHip,rGast,usaHip};
+}
+
+function recalc(){R=calcular();}
+function calcIrAnalisis(){
+  recalc();
+  swTab('anal',document.querySelectorAll('.tab-btn')[1]);
+}
+
+// ══ RENDER ANÁLISIS ══
+function renderAnalisis(){
+  if(!R)recalc();
+  const r=R;
+
+  // Verdict
+  const vw=document.getElementById('verdict-wrap');
+  vw.style.display='block';
+  let vc,ve,vt,vd;
+  if(r.rentNeta>=0.05){vc='v-ok';ve='✅';vt='Operación RENTABLE';vd=`Rentabilidad neta ${pct(r.rentNeta)} — supera el objetivo del 5%. Cash-flow mensual ${eurm(r.cfM)}. ${r.cfM>100?'El inmueble genera excedente mensual.':'El inmueble se autofinancia con el alquiler.'}`;}
+  else if(r.rentNeta>=0.03){vc='v-lim';ve='⚠️';vt='Operación en el LÍMITE';vd=`Rentabilidad neta ${pct(r.rentNeta)} — por debajo del 5% objetivo. Margen insuficiente para imprevistos. Revisa el Plan de Optimización.`;}
+  else{vc='v-no';ve='🚫';vt='Operación NO RENTABLE';vd=`Rentabilidad neta ${pct(r.rentNeta)} — muy por debajo del mínimo. Cash-flow ${eurm(r.cfM)}/mes. Requiere ajuste significativo en precio, alquiler o costes.`;}
+  vw.innerHTML=`<div class="verdict ${vc}"><div class="v-emoji">${ve}</div><div><div class="v-title">${vt}</div><div class="v-desc">${vd}</div></div></div>`;
+
+  // Métricas
+  const cls=v=>v>=0.05?'grn':v>=0.03?'amb':'red';
+  const clsCF=v=>v>100?'grn':v>=0?'amb':'red';
+  const mets=[
+    {l:'Rent. bruta',v:pct(r.rentBruta),c:cls(r.rentBruta),s:'Mín. recomendado: 6%',p:Math.min(r.rentBruta/0.12*100,100)},
+    {l:'Rent. neta',v:pct(r.rentNeta),c:cls(r.rentNeta),s:'Objetivo: ≥ 5%',p:Math.min(r.rentNeta/0.10*100,100)},
+    {l:'Cash-Flow mensual',v:eurm(r.cfM),c:clsCF(r.cfM),s:`${eur(Math.round(r.cfA))} anuales`,p:null},
+    {l:'Cash on Cash',v:pct(r.coc),c:cls(r.coc),s:'Retorno s/ capital propio',p:Math.min(r.coc/0.15*100,100)},
+    {l:'ROCE',v:pct(r.roce),c:cls(r.roce),s:'Rendimiento capital empleado',p:null},
+    {l:'Rent. total (con rev.)',v:pct(r.rentTot),c:cls(r.rentTot),s:`Incluye revalorización ${pct(r.rev,1)}`,p:null},
+    {l:'PER',v:r.per.toFixed(1)+' años',c:r.per<15?'grn':r.per<25?'amb':'red',s:'Años alquiler = precio compra',p:null},
+    {l:'Cuota / Alquiler',v:pct(r.rHip),c:r.rHip<0.6?'grn':r.rHip<0.8?'amb':'red',s:'<60% ideal, <80% aceptable',p:null},
+  ];
+  const gc=c=>c==='grn'?'var(--green-m)':c==='amb'?'#f59e0b':'#ef4444';
+  document.getElementById('mg').innerHTML=mets.map(m=>`<div class="mc ${m.c}"><div class="mc-lbl">${m.l}</div><div class="mc-val">${m.v}</div>${m.p!==null?`<div class="prog"><div class="progf" style="width:${Math.max(0,m.p)}%;background:${gc(m.c)}"></div></div>`:''}<div class="mc-sub">${m.s}</div></div>`).join('');
+
+  // CF badge
+  document.getElementById('cf-badge').textContent=`CF anual: ${eur(Math.round(r.cfA))}`;
+  document.getElementById('cf-badge').style.color=r.cfA>=0?'var(--green)':'var(--red)';
+
+  // CF table
+  const rows=[
+    ['➕ Ingresos alquiler',r.alqM,r.alqA,'pos'],
+    r.perdV>0?['➖ Pérdida vacíos',-r.perdV/12,-r.perdV,'neg']:null,
+    r.gestImp>0?['➖ Gestión agencia',-r.gestImp/12,-r.gestImp,'neg']:null,
+    ['   IBI anual',-r.ibi/12,-r.ibi,'neg'],
+    ['   Comunidad propietarios',-r.comG/12,-r.comG,'neg'],
+    ['   Seguros (paquete completo)',-r.seguros/12,-r.seguros,'neg'],
+    ['   Mantenimiento',-r.mant/12,-r.mant,'neg'],
+    r.irpfA>0?['➖ IRPF estimado',-r.irpfA/12,-r.irpfA,'neg']:null,
+    ['= Renta neta operativa',r.alqM-r.gastOp/12-r.irpfA/12,r.alqA-r.gastTot,r.cfM>0?'pos':'neg'],
+    r.usaHip?['➖ Cuota hipoteca',-r.cuota,-r.cuota*12,'neg']:null,
+    r.usaHip?['    · Intereses prom.',-r.int,-r.int*12,'sub']:null,
+    r.usaHip?['    · Amortización prom.',-r.amort,-r.amort*12,'sub']:null,
+  ].filter(Boolean);
+  const totRow=['= CASH-FLOW NETO',r.cfM,r.cfA,r.cfM>=0?'pos':'neg'];
+  document.getElementById('cf-body').innerHTML=rows.map(f=>{
+    if(f[3]==='sub')return`<tr class="sub"><td>${f[0]}</td><td class="neg">${eurm(f[1])}</td><td class="neg">${eur(Math.round(f[2]))}</td></tr>`;
+    return`<tr><td>${f[0]}</td><td class="${f[3]}">${eurm(f[1])}</td><td class="${f[3]}">${eur(Math.round(f[2]))}</td></tr>`;
+  }).join('')+`<tr class="tot"><td>${totRow[0]}</td><td class="${totRow[3]}">${eurm(totRow[1])}</td><td class="${totRow[3]}">${eur(Math.round(totRow[2]))}</td></tr>`;
+
+  // Mejoras
+  renderMejoras(r);
+  // Semáforo
+  renderSemaforo(r);
+  // PE
+  renderPE(r);
+}
+
+// ══ MEJORAS ══
+function renderMejoras(r){
+  const lista=[];
+  const alqMin=(r.totInv*0.05+r.gastTot+(r.usaHip?r.cuota*12:0))/12;
+  const precMax=r.alqA>0?(r.alqA-r.gastOp-r.irpfA)/0.05:0;
+  if(r.rentNeta<0.05)lista.push({t:'danger',i:'🚫',ti:'Rentabilidad neta por debajo del 5%',d:`Actual: ${pct(r.rentNeta)}. Sigue las sugerencias a continuación.`});
+  if(r.alqM<alqMin)lista.push({t:'alert',i:'📈',ti:'Subir el alquiler',d:`Con el precio actual, el alquiler mínimo para el 5% neto es ${eurm(alqMin)}/mes.`,tgt:`Diferencia: +${eurm(alqMin-r.alqM)}/mes`});
+  if(r.totInv>precMax*1.05&&precMax>0)lista.push({t:'alert',i:'🤝',ti:'Negociar el precio de compra',d:`La operación está sobrepreciada para los ingresos proyectados.`,tgt:`Precio máx. recomendado: ${eur(Math.round(precMax))} (pagas ${eur(Math.round(r.totInv-precMax))} de más)`});
+  if(r.cfM<0&&r.usaHip)lista.push({t:'danger',i:'⚠️',ti:`Cash-flow negativo: ${eurm(r.cfM)}/mes`,d:'Cada mes sale dinero de tu bolsillo. En caso de vacíos o averías puede ser insostenible.',tgt:'Opciones: mayor entrada, mayor plazo hipotecario, o subir el alquiler.'});
+  if(r.rHip>0.8&&r.usaHip)lista.push({t:'alert',i:'🏦',ti:`Cuota hipoteca muy alta: ${pct(r.rHip)} del alquiler`,d:'Margen muy ajustado. Cualquier imprevisto o subida de Euribor puede generar pérdidas.',tgt:'Objetivo: ratio <60%. Considera mayor entrada o plazo más largo.'});
+  if(r.rGast>0.35)lista.push({t:'alert',i:'✂️',ti:'Gastos operativos elevados',d:`Representan el ${pct(r.rGast)} de los ingresos. Rango saludable: <30%.`,tgt:'Revisa seguros (pide comparativas), comunidad y servicios externos.'});
+  if(r.seguros<100)lista.push({t:'info',i:'🛡️',ti:'Seguros muy bajos o sin seguro de impago',d:'El paquete completo (hogar + impago + vida) debería rondar el 60% de una mensualidad al año.',tgt:`Referencia para alquiler de ${eurm(r.alqM)}/mes: ~${Math.round(r.alqM*0.6)}€/año en seguros.`});
+  if(r.rentNeta>=0.05)lista.push({t:'ok',i:'✅',ti:'Rentabilidad objetivo alcanzada',d:`Superas el 5% neto. La operación es sólida.`});
+  if(r.cfM>=0)lista.push({t:'ok',i:'✅',ti:'Cash-flow positivo',d:'La propiedad se autofinancia con el alquiler. Señal de sostenibilidad.'});
+  if(r.per<15)lista.push({t:'ok',i:'✅',ti:`PER excelente: ${r.per.toFixed(1)} años`,d:'Recuperas la inversión vía alquiler en menos de 15 años. Muy competitivo.'});
+  document.getElementById('mej-list').innerHTML=lista.length?lista.map(m=>`<div class="mej ${m.t}"><div class="mej-ico">${m.i}</div><div><div class="mej-tit">${m.ti}</div><div class="mej-dsc">${m.d}</div>${m.tgt?`<div class="mej-tgt">→ ${m.tgt}</div>`:''}</div></div>`).join(''):'<div class="empty"><div class="ei">🎉</div><p>No se detectan problemas.</p></div>';
+}
+
+// ══ SEMÁFORO ══
+function renderSemaforo(r){
+  const items=[
+    {l:'Rent. bruta',v:pct(r.rentBruta),ok:r.rentBruta>=0.06,w:r.rentBruta>=0.04,d:'≥6% ideal'},
+    {l:'Rent. neta',v:pct(r.rentNeta),ok:r.rentNeta>=0.05,w:r.rentNeta>=0.03,d:'≥5% objetivo'},
+    {l:'Cash-Flow',v:eurm(r.cfM)+'/mes',ok:r.cfM>100,w:r.cfM>=0,d:'>100€/mes ideal'},
+    {l:'PER',v:r.per.toFixed(1)+' años',ok:r.per<15,w:r.per<25,d:'<15 excelente'},
+    {l:'Hip/Alquiler',v:pct(r.rHip),ok:r.rHip<0.6,w:r.rHip<0.8,d:'<60% ideal'},
+    {l:'Cash on Cash',v:pct(r.coc),ok:r.coc>=0.06,w:r.coc>=0.03,d:'≥6% ideal'},
+    {l:'Gastos/Ingr.',v:pct(r.rGast),ok:r.rGast<0.25,w:r.rGast<0.35,d:'<25% ideal'},
+    {l:'Rent. total',v:pct(r.rentTot),ok:r.rentTot>=0.07,w:r.rentTot>=0.05,d:'≥7% ideal'},
+  ];
+  document.getElementById('smg').innerHTML=items.map(i=>{const dc=i.ok?'grn':i.w?'amb':'red';return`<div class="smi"><div class="smd ${dc}"></div><div><div class="smi-lbl">${i.l}</div><div class="smi-val">${i.v}</div><div class="smi-dsc">${i.d}</div></div></div>`;}).join('');
+}
+
+// ══ PUNTO EQUILIBRIO ══
+function renderPE(r){
+  const alqMin=(r.totInv*0.05+r.gastOp+r.irpfA+(r.usaHip?r.cuota*12:0))/12;
+  const precMax=r.alqA>0?(r.alqA-r.gastOp-r.irpfA)/0.05:0;
+  const gasMax=r.alqA-r.totInv*0.05-(r.usaHip?r.cuota*12:0);
+  const margen=Math.min(r.rentNeta/0.05*100,100);
+  document.getElementById('pe-alq').textContent=eurm(alqMin)+'/mes';
+  document.getElementById('pe-alq-s').textContent=alqMin>r.alqM?`Necesitas +${eurm(alqMin-r.alqM)}/mes`:`✅ Ya lo cumples con ${eurm(r.alqM-alqMin)}/mes de margen`;
+  document.getElementById('pe-prec').textContent=eur(Math.round(Math.max(0,precMax)));
+  document.getElementById('pe-prec-s').textContent=precMax<r.totInv?`Pagas ${eur(Math.round(r.totInv-precMax))} de más`:`Tienes margen de ${eur(Math.round(precMax-r.totInv))}`;
+  document.getElementById('pe-gas').textContent=gasMax>0?eur(Math.round(gasMax)):'Inviable con datos actuales';
+  document.getElementById('pe-marg').textContent=`${pct(r.rentNeta)} / 5,00% — ${r.rentNeta>=0.05?'✅ SUPERADO':'Faltan '+pct(0.05-r.rentNeta)}`;
+  document.getElementById('pe-marg').style.color=r.rentNeta>=0.05?'var(--green)':'var(--red)';
+  document.getElementById('pe-prog').style.width=Math.max(0,margen)+'%';
+  document.getElementById('pe-prog').style.background=r.rentNeta>=0.05?'var(--green-m)':'#ef4444';
+}
+
+// ══ SIMULADOR ══
+function initSim(){
+  if(!R)recalc();
+  const r=R;
+  document.getElementById('s-alq').value=r.alqM;
+  document.getElementById('s-prec').value=r.precio;
+  document.getElementById('s-fin').value=r.usaHip?parseFloat(g('pct-fin')):0;
+  document.getElementById('s-tin').value=g('tin');
+  document.getElementById('s-gas').value=Math.round(r.gastOp);
+  document.getElementById('sc-alq').textContent=`actual: ${eur(r.alqM)}/mes`;
+  document.getElementById('sc-prec').textContent=`actual: ${eur(r.precio)}`;
+  document.getElementById('sc-fin').textContent=`actual: ${g('pct-fin')}%`;
+  document.getElementById('sc-tin').textContent=`actual: ${g('tin')}%`;
+  document.getElementById('sc-gas').textContent=`actual: ${eur(Math.round(r.gastOp))}/año`;
+  simular();
+  renderPE(r);
+}
+
+function simular(){
+  const alqM=parseFloat(document.getElementById('s-alq').value);
+  const precio=parseFloat(document.getElementById('s-prec').value);
+  const pctFin=parseFloat(document.getElementById('s-fin').value)/100;
+  const tin=parseFloat(document.getElementById('s-tin').value);
+  const gastos=parseFloat(document.getElementById('s-gas').value);
+  const plazo=parseFloat(g('plazo'))||25;
+  document.getElementById('sv-alq').textContent=eur(alqM)+'/mes';
+  document.getElementById('sv-prec').textContent=precio.toLocaleString('es-ES')+' €';
+  document.getElementById('sv-fin').textContent=(pctFin*100).toFixed(0)+' %';
+  document.getElementById('sv-tin').textContent=tin.toFixed(1)+' %';
+  document.getElementById('sv-gas').textContent=eur(gastos)+'/año';
+  const itpP=parseFloat(g('itp-pct-auto'))/100||0.08;
+  const totC=precio*(1+itpP)+parseFloat(g('notaria'))+parseFloat(g('registro'))+parseFloat(g('reforma'));
+  const hipC=precio*pctFin;
+  const capP=Math.max(0,totC-hipC);
+  const h=calcHip(hipC,tin,plazo);
+  const alqA=alqM*12;
+  const ingN=alqA-gastos;
+  const rn=totC>0?ingN/totC:0;
+  const cfM=alqM-h.cuota-gastos/12;
+  const coc=capP>0?cfM*12/capP:0;
+  document.getElementById('sim-neta').textContent=pct(rn);
+  document.getElementById('sim-neta').style.color=rn>=0.05?'#2eab68':rn>=0.03?'#f59e0b':'#ef4444';
+  document.getElementById('sim-cf').textContent=eurm(cfM);
+  document.getElementById('sim-cf').style.color=cfM>0?'#2eab68':cfM>=0?'#f59e0b':'#ef4444';
+  document.getElementById('sim-coc').textContent=pct(coc);
+  document.getElementById('sim-coc').style.color=coc>=0.05?'#2eab68':coc>=0.03?'#f59e0b':'#ef4444';
+  const vb=document.getElementById('sim-vb');
+  if(rn>=0.05){vb.style.background='var(--green-bg)';vb.style.color='var(--green)';vb.textContent='✅ RENTABLE con estos parámetros';}
+  else if(rn>=0.03){vb.style.background='var(--amber-bg)';vb.style.color='var(--amber)';vb.textContent='⚠️ En el límite — ajusta los parámetros';}
+  else{vb.style.background='var(--red-bg)';vb.style.color='var(--red)';vb.textContent='🚫 No rentable — requiere ajustes significativos';}
+}
+
+// ══ GUARDAR OPS ══
+function guardarOp(){
+  recalc();
+  document.getElementById('modal-nombre').value=g('direccion')||'';
+  document.getElementById('ovl').classList.add('open');
+  setTimeout(()=>document.getElementById('modal-nombre').focus(),100);
+}
+function confirmarGuardar(){
+  const nombre=document.getElementById('modal-nombre').value.trim()||'Sin nombre';
+  const op={id:Date.now(),nombre,fecha:new Date().toLocaleDateString('es-ES'),comunidad:g('comunidad'),...R};
+  ops.push(op);
+  localStorage.setItem('ic-v3',JSON.stringify(ops));
+  closeModal();renderOps();renderCmp();
+}
+function renderOps(){
+  const el=document.getElementById('op-list');
+  if(!ops.length){el.innerHTML=`<div class="empty"><div class="ei">🏠</div><p>No hay operaciones guardadas.<br>Calcula y pulsa <strong>Guardar actual</strong>.</p></div>`;return;}
+  el.innerHTML=ops.map(op=>{
+    const sc=op.rentNeta>=0.05?'grn':op.rentNeta>=0.03?'amb':'red';
+    const em=op.rentNeta>=0.05?'✅':op.rentNeta>=0.03?'⚠️':'🚫';
+    return`<div class="op-item"><div class="op-st ${sc}">${em}</div><div class="op-main"><div class="op-name">${op.nombre}</div><div class="op-meta">${op.comunidad||'—'} · ${op.fecha} · ${eur(op.precio)}</div></div><div class="op-kpis"><div class="op-kpi"><div class="op-kl">Rent. neta</div><div class="op-kv" style="color:${op.rentNeta>=0.05?'var(--green)':op.rentNeta>=0.03?'var(--amber)':'var(--red)'}">${pct(op.rentNeta)}</div></div><div class="op-kpi"><div class="op-kl">Cash-Flow</div><div class="op-kv" style="color:${op.cfM>=0?'var(--green)':'var(--red)'}">${eurm(op.cfM)}/mes</div></div><div class="op-kpi"><div class="op-kl">Cash on Cash</div><div class="op-kv">${pct(op.coc)}</div></div></div><div style="display:flex;gap:6px;"><button class="btn btn-s btn-ico btn-sm" title="Cargar" onclick="cargarOp(${op.id})">📂</button><button class="btn btn-d btn-ico btn-sm" title="Eliminar" onclick="elimOp(${op.id})">🗑️</button></div></div>`;
+  }).join('');
+}
+function elimOp(id){if(!confirm('¿Eliminar?'))return;ops=ops.filter(o=>o.id!==id);localStorage.setItem('ic-v3',JSON.stringify(ops));renderOps();renderCmp();}
+function cargarOp(id){
+  const op=ops.find(o=>o.id===id);if(!op)return;
+  const map={precio:'precio',alqM:'alquiler',ibi:'ibi',comG:'comunidad-g',seguros:'seguros-total',mant:'mant',reforma:'reforma',mob:'mobiliario',conting:'conting',notaria:'notaria',registro:'registro',gestoria:'gestoria',tasacion:'tasacion'};
+  Object.entries(map).forEach(([k,id2])=>{if(op[k]!==undefined&&document.getElementById(id2))document.getElementById(id2).value=op[k]||0;});
+  document.getElementById('direccion').value=op.nombre;
+  recalc();swTab('calc',document.querySelectorAll('.tab-btn')[0]);
+}
+
+// ══ COMPARAR ══
+function renderCmp(){
+  const el=document.getElementById('cmp-content');
+  if(ops.length<2){el.innerHTML=`<div class="empty"><div class="ei">⚖️</div><p>Guarda al menos 2 operaciones para comparar.</p></div>`;return;}
+  const cols=ops.map(op=>`<th>${op.nombre}<br><span style="font-weight:400;color:var(--ink3);font-size:10px;">${op.fecha}</span></th>`).join('');
+  const mets=[
+    ['Precio compra',op=>eur(op.precio),'precio','asc'],
+    ['Total inversión',op=>eur(op.totInv),'totInv','asc'],
+    ['Capital propio',op=>eur(op.capProp),'capProp','asc'],
+    ['Alquiler mensual',op=>eurm(op.alqM),'alqM','desc'],
+    ['Cuota hipoteca',op=>eurm(op.cuota),'cuota','asc'],
+    ['Cash-Flow mensual',op=>eurm(op.cfM),'cfM','desc'],
+    ['Rent. bruta',op=>pct(op.rentBruta),'rentBruta','desc'],
+    ['Rent. neta',op=>pct(op.rentNeta),'rentNeta','desc'],
+    ['Cash on Cash',op=>pct(op.coc),'coc','desc'],
+    ['ROCE',op=>pct(op.roce),'roce','desc'],
+    ['Rent. total',op=>pct(op.rentTot),'rentTot','desc'],
+    ['PER (años)',op=>op.per?.toFixed(1)||'—','per','asc'],
+    ['Hipoteca/Alquiler',op=>pct(op.rHip),'rHip','asc'],
+    ['Veredicto',op=>op.rentNeta>=0.05?'✅ Rentable':op.rentNeta>=0.03?'⚠️ Límite':'🚫 No rentable',null,null],
+  ];
+  const tbody=mets.map(([label,fn,key,dir])=>{
+    const vals=ops.map(op=>op[key]);
+    let best=-1;
+    if(key&&dir)best=dir==='desc'?vals.indexOf(Math.max(...vals)):vals.indexOf(Math.min(...vals));
+    const tds=ops.map((op,i)=>`<td class="${i===best?'best':''}">${fn(op)}</td>`).join('');
+    return`<tr><td style="font-weight:600;">${label}</td>${tds}</tr>`;
+  }).join('');
+  el.innerHTML=`<div style="overflow-x:auto;"><table class="cmp"><thead><tr><th>Métrica</th>${cols}</tr></thead><tbody>${tbody}</tbody></table></div><div class="ibox blu" style="margin-top:12px;"><span>💡</span> <strong>En verde:</strong> mejor valor de cada fila entre las operaciones comparadas.</div>`;
+}
+
+// ══ CSV ══
+function exportCSV(){
+  if(!ops.length){alert('No hay operaciones guardadas.');return;}
+  const keys=['nombre','fecha','precio','totInv','capProp','alqM','cuota','cfM','cfA','rentBruta','rentNeta','coc','roce','rentTot','per','rHip'];
+  const heads=['Nombre','Fecha','Precio','Total Inversión','Capital Propio','Alquiler Mensual','Cuota Hipoteca','CF Mensual','CF Anual','Rent. Bruta','Rent. Neta','Cash on Cash','ROCE','Rent. Total','PER','Hip/Alq'];
+  const rows=ops.map(op=>keys.map(k=>typeof op[k]==='number'?op[k].toFixed(4):`"${op[k]||''}"`).join(';'));
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([[heads.join(';'),...rows].join('\n')],{type:'text/csv;charset=utf-8;'}));
+  a.download='investcheck-operaciones.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+// ══ MODAL ══
+function closeModal(){document.getElementById('ovl').classList.remove('open');}
+document.getElementById('ovl').addEventListener('click',e=>{if(e.target===document.getElementById('ovl'))closeModal();});
+
+// ══ INIT ══
+window.addEventListener('DOMContentLoaded',()=>{
+  actualizarITP();autoCalcularGastos();recalc();renderOps();
+});
 </script>
 
 </body>
